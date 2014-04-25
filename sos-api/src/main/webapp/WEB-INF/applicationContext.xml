@@ -6,10 +6,10 @@
   http://www.springframework.org/schema/context/spring-context.xsd">
 
 	<bean id="greetingService" class="com.sos.api.GreetingServiceImpl" />
-	<bean id="papelService" class="com.sos.service.business.PapelServiceImpl" />
+	<bean id="tipoServicoService" class="com.sos.service.business.TipoServicoServiceImpl" />
 	<bean class="com.sos.api.DateTimeService" scope="request" />
 	<bean class="com.sos.api.SpringSingletonResource" />
-	<bean class="com.sos.api.SpringRequestResource" scope="request" />
+	<bean class="com.sos.api.TipoServicoAPI" scope="request" />
 	<bean class="com.sos.api.CustomExceptionMapper" />
 	
 	<context:annotation-config />

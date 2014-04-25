@@ -19,7 +19,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
-import com.sos.entities.Usuario;
+import com.sos.entities.TipoServico;
 
 @Configuration
 @Import(PropertyPlaceholderConfig.class)
@@ -52,7 +52,7 @@ public class ApplicationConfig {
 	@Bean
 	public LocalContainerEntityManagerFactoryBean entityManagerFactory(){
 		HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-		vendorAdapter.setDatabase(Database.POSTGRESQL);
+		vendorAdapter.setDatabase(Database.MYSQL);
 		vendorAdapter.setGenerateDdl(true);
 		vendorAdapter.setShowSql(false);
 		
@@ -60,7 +60,7 @@ public class ApplicationConfig {
 		
 		LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
 		factory.setJpaVendorAdapter(vendorAdapter);
-		factory.setPackagesToScan(Usuario.class.getPackage().getName());
+		factory.setPackagesToScan(TipoServico.class.getPackage().getName());
 		factory.setDataSource(dataSource());
 		factory.setJpaDialect(jpaDialect);
 		factory.setBeanName("entityManagerFactory");

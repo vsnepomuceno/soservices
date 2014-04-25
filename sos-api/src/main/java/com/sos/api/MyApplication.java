@@ -12,7 +12,7 @@ public class MyApplication extends ResourceConfig {
         register(RequestContextFilter.class);
         register(JerseyResource.class);
         register(SpringSingletonResource.class);
-        register(SpringRequestResource.class);
+        register(TipoServicoAPI.class);
         register(CustomExceptionMapper.class);
     }
 }
