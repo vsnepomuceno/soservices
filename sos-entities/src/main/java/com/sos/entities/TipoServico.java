@@ -73,7 +73,7 @@ public class TipoServico {
 		return valorado;
 	}
 
-	public void setValorado(boolean valorado) {
+	public void setValorado(Boolean valorado) {
 		this.valorado = valorado;
 	}
 
