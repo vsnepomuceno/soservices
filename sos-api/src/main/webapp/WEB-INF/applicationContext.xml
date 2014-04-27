@@ -8,6 +8,8 @@
 	<bean id="tipoServicoService" class="com.sos.service.business.TipoServicoServiceImpl" />
 	<bean class="com.sos.api.TipoServicoAPI" scope="request" />
 	<bean class="com.sos.api.CustomExceptionMapper" />
+	<bean class="com.sos.api.UsuarioAPI" scope="request" />
+	<bean class="com.sos.api.PrestadorAPI" scope="request" />
 	
 	<context:annotation-config />
 	<context:component-scan base-package="com.sos.service" />
