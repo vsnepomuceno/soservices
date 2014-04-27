@@ -1,6 +1,5 @@
 package com.sos.service.business;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,15 +54,7 @@ public class TipoServicoServiceImpl implements TipoServicoService {
 		ResultadoValidacao resultadoValidacao = validarTipoServico(tipoServico, false);
 		
 		if(resultadoValidacao.isValido()){
-			String nome = tipoServico.getNome();
-			TipoServico tipoServicoPesquisado = tipoServicoRepository.findByNome(nome);
-			
-			if(tipoServicoPesquisado == null){
-				tipoServicoRepository.save(tipoServico);
-			}else{
-				String mensagem = MessageUtil.getMessageFromBundle(TIPO_SERVICO_NOME_EXISTENTE);
-				throw new ServiceException(MessageFormat.format(mensagem, nome));
-			}
+			tipoServicoRepository.save(tipoServico);
 		}else{
 			throw new ServiceException(resultadoValidacao.getMsgs());
 		}
@@ -72,7 +63,13 @@ public class TipoServicoServiceImpl implements TipoServicoService {
 	@Override
 	@Transactional
 	public void update(TipoServico tipoServico) throws ServiceException {
-		tipoServicoRepository.save(tipoServico);
+		ResultadoValidacao resultadoValidacao = validarTipoServico(tipoServico, true);
+		
+		if(resultadoValidacao.isValido()){
+			tipoServicoRepository.save(tipoServico);
+		}else{
+			throw new ServiceException(resultadoValidacao.getMsgs());
+		}
 	}
 
 	@Override
@@ -87,6 +84,17 @@ public class TipoServicoServiceImpl implements TipoServicoService {
 		if(tipoServico.getNome() == null){
 			valido = false;
 			msgs.add(MessageUtil.getMessageFromBundle(TIPO_SERVICO_NOME_OBRIGATORIO));
+		}else{
+			String nome = tipoServico.getNome();
+			TipoServico tipoServicoPesquisado = tipoServicoRepository.findByNome(nome);
+			
+			if(tipoServicoPesquisado != null){
+				
+				if((editar && !tipoServicoPesquisado.getId().equals(tipoServico.getId())) || !editar){
+					valido = false;
+					msgs.add(MessageUtil.getMessageFromBundle(TIPO_SERVICO_NOME_EXISTENTE));
+				}
+			}
 		}
 		
 		if(tipoServico.isValorado() == null){
