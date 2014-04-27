@@ -49,7 +49,7 @@ public class PrestadorServiceImpl implements PrestadorService {
 		if (resultadoValidacao.isValido()) {
 			String cpf = prestador.getCpf();
 			Prestador prestadorPesquisado = prestadorRepository
-					.findByCPF(cpf);
+					.findByCpf(cpf);
 
 			if (prestadorPesquisado == null) {
 				prestadorRepository.save(prestador);
@@ -75,7 +75,7 @@ public class PrestadorServiceImpl implements PrestadorService {
 
 	@Override
 	public Prestador findByCPF(String cpf) throws ServiceException {
-		return prestadorRepository.findByCPF(cpf);
+		return prestadorRepository.findByCpf(cpf);
 	}
 
 	
