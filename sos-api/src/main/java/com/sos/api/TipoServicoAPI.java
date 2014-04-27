@@ -6,7 +6,9 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
@@ -65,18 +67,54 @@ public class TipoServicoAPI {
     		
 			tipoServicoService.create(tipoServico);
 		} catch (ServiceException e) {
-			//TODO Mostrar como vai ser mostrado a mensagem de erro para o cliente
-			e.printStackTrace();
+			//TODO Saber qual mensagem passar para o usuário
 		} catch (JSONException e) {
-			e.printStackTrace();
+			//TODO Saber qual mensagem passar para o usuário
 		} catch (Exception e) {
-			e.printStackTrace();
+			//TODO Saber qual mensagem passar para o usuário
 		}
     	return retorno;
     }
     
     @DELETE
-    public String removerTipoServico(String json){
-    	return null;
+    @Path("{tipo-servico}")
+    public void removerTipoServico(@PathParam("tipo-servico") String nomeTipoServico){
+    	try {
+			TipoServico tipoServico = tipoServicoService.findByNome(nomeTipoServico);
+			if(tipoServico != null){
+				tipoServicoService.delete(tipoServico);
+			}else{
+				//TODO Saber qual mensagem passar para o usuário
+			}
+		} catch (ServiceException e) {
+			//TODO Saber qual mensagem passar para o usuário
+		} catch (Exception e) {
+			//TODO Saber qual mensagem passar para o usuário
+		}
+    }
+    
+    @PUT
+    @Path("{tipo-servico}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public String editarTipoServico(@PathParam("tipo-servico") String nomeTipoServico, String json){
+    	String retorno = BLANK_RETURN;
+    	try{
+    		TipoServico tipoServico = tipoServicoService.findByNome(nomeTipoServico);
+    		if(tipoServico != null){
+    			JSONObject jsonObject = new JSONObject(json);
+    			tipoServico.setNome(jsonObject.getString(PARAM_NOME));
+    			tipoServico.setValorado(jsonObject.getBoolean(PARAM_VALORADO));
+    			
+    			tipoServicoService.update(tipoServico);
+    		}else{
+    			//TODO Saber qual mensagem passar para o usuário
+    		}
+    	}catch(ServiceException e){
+    		//TODO Saber qual mensagem passar para o usuário
+    	}catch (Exception e) {
+    		//TODO Saber qual mensagem passar para o usuário
+		}
+    	return retorno;
     }
 }
