@@ -6,7 +6,9 @@
   http://www.springframework.org/schema/context/spring-context.xsd">
 
 	<bean id="tipoServicoService" class="com.sos.service.business.TipoServicoServiceImpl" />
+	<bean id="servicoService" class="com.sos.service.business.ServicoServiceImpl" />
 	<bean class="com.sos.api.TipoServicoAPI" scope="request" />
+	<bean class="com.sos.api.ServicoAPI" scope="request" />
 	<bean class="com.sos.api.CustomExceptionMapper" />
 	
 	<context:annotation-config />

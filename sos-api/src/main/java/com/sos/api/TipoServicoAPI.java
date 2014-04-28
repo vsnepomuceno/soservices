@@ -36,7 +36,7 @@ public class TipoServicoAPI {
     
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public String getTiposServicos() {
+    public String pesquisarTiposServicos() {
     	String retorno = BLANK_RETURN;
 		try {
 			List<TipoServico> tiposServicos = tipoServicoService.findAllSortByName();
@@ -62,8 +62,7 @@ public class TipoServicoAPI {
     	try {
     		JSONObject jsonObject = new JSONObject(json);
     		TipoServico tipoServico = new TipoServico();
-    		tipoServico.setNome(jsonObject.getString(PARAM_NOME));
-    		tipoServico.setValorado(jsonObject.getBoolean(PARAM_VALORADO));
+    		configurarTipoServico(tipoServico, jsonObject);
     		
 			tipoServicoService.create(tipoServico);
 		} catch (ServiceException e) {
@@ -78,9 +77,9 @@ public class TipoServicoAPI {
     
     @DELETE
     @Path("{tipo-servico}")
-    public void removerTipoServico(@PathParam("tipo-servico") String nomeTipoServico){
+    public void removerTipoServico(@PathParam("tipo-servico") Long codigo){
     	try {
-			TipoServico tipoServico = tipoServicoService.findByNome(nomeTipoServico);
+			TipoServico tipoServico = tipoServicoService.findByCodigo(codigo);
 			if(tipoServico != null){
 				tipoServicoService.delete(tipoServico);
 			}else{
@@ -97,14 +96,13 @@ public class TipoServicoAPI {
     @Path("{tipo-servico}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String editarTipoServico(@PathParam("tipo-servico") String nomeTipoServico, String json){
+    public String editarTipoServico(@PathParam("tipo-servico") Long codigo, String json){
     	String retorno = BLANK_RETURN;
     	try{
-    		TipoServico tipoServico = tipoServicoService.findByNome(nomeTipoServico);
+    		TipoServico tipoServico = tipoServicoService.findByCodigo(codigo);
     		if(tipoServico != null){
     			JSONObject jsonObject = new JSONObject(json);
-    			tipoServico.setNome(jsonObject.getString(PARAM_NOME));
-    			tipoServico.setValorado(jsonObject.getBoolean(PARAM_VALORADO));
+    			configurarTipoServico(tipoServico, jsonObject);
     			
     			tipoServicoService.update(tipoServico);
     		}else{
@@ -116,5 +114,10 @@ public class TipoServicoAPI {
     		//TODO Saber qual mensagem passar para o usuário
 		}
     	return retorno;
+    }
+    
+    private void configurarTipoServico(TipoServico tipoServico, JSONObject jsonObject) throws JSONException{
+    	tipoServico.setNome(jsonObject.getString(PARAM_NOME));
+		tipoServico.setValorado(jsonObject.getBoolean(PARAM_VALORADO));
     }
 }

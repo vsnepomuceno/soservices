@@ -9,11 +9,11 @@ import java.net.URL;
 
 import org.junit.Test;
 
-public class TipoServicoAPITest {
+public class ServicoAPITest {
 
 	@Test
-	public void cadastrarTipoServico() throws IOException{
-		String url = "http://localhost:8080/sos-api/tipo-servico";
+	public void cadastrarServico() throws IOException{
+		String url = "http://localhost:8080/sos-api/servico";
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
  
@@ -21,7 +21,7 @@ public class TipoServicoAPITest {
 		con.setRequestMethod("POST");
 		con.addRequestProperty("Content-Type", "application/json");
  
-		String urlParameters = "{\"nome\":\"Eletricista\",\"valorado\":false}";
+		String urlParameters = "{\"descricao\":\"Fazendo um teste.\",\"valor\":25.00, \"id_tipo_servico\": 3}";
  
 		// Send post request
 		con.setDoOutput(true);
@@ -48,9 +48,9 @@ public class TipoServicoAPITest {
 	}
 	
 	@Test
-	public void deletarTipoServico() {
+	public void deletarServico() {
 		try{
-			String url = "http://localhost:8080/sos-api/tipo-servico/1";
+			String url = "http://localhost:8080/sos-api/servico/1";
 			URL obj = new URL(url);
 			HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
 			connection.setRequestMethod("DELETE");
@@ -64,8 +64,8 @@ public class TipoServicoAPITest {
 	}
 
 	@Test
-	public void editarTipoServico() throws IOException{
-		String url = "http://localhost:8080/sos-api/tipo-servico/1";
+	public void editarServico() throws IOException{
+		String url = "http://localhost:8080/sos-api/servico/1";
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
  
@@ -73,7 +73,7 @@ public class TipoServicoAPITest {
 		con.setRequestMethod("PUT");
 		con.addRequestProperty("Content-Type", "application/json");
  
-		String urlParameters = "{\"nome\":\"Eletricista\",\"valorado\":true}";
+		String urlParameters = "{\"descricao\":\"Fazendo um teste.\",\"valor\":100.00, \"id_tipo_servico\": 4}";
  
 		// Send post request
 		con.setDoOutput(true);
