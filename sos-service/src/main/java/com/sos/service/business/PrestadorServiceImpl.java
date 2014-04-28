@@ -9,7 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.sos.entities.Prestador;
-import com.sos.service.business.util.ResultadoValidacao;
+import com.sos.service.business.util.validators.ResultadoValidacao;
 import com.sos.service.repository.PrestadorRepositorio;
 import com.sos.service.util.MessageUtil;
 import com.sos.service.util.exception.ServiceException;
