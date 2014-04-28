@@ -1,5 +1,7 @@
 package com.sos.entities;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
@@ -11,7 +13,9 @@ import javax.persistence.Table;
 @Table(name = "prestador")
 @PrimaryKeyJoinColumn(name = "id")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class Prestador extends Usuario {
+public class Prestador extends Usuario implements Serializable{
+
+	private static final long serialVersionUID = 2793617153420405296L;
 
 	@Column(name = "cpf", nullable = false, length = 200, unique = true)
 	private String cpf;

@@ -1,15 +1,23 @@
 package com.sos.entities;
 
+import java.io.Serializable;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
 @Table(name="tipo_servico")
-public class TipoServico {
+public class TipoServico implements Serializable{
+
+	private static final long serialVersionUID = 6897718017222545185L;
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -21,7 +29,10 @@ public class TipoServico {
 	
 	@Column(name="valorado", nullable=false)
 	private Boolean valorado;
-
+	
+	@OneToMany(cascade=CascadeType.ALL, mappedBy="tipoServico", fetch=FetchType.LAZY)
+	private Set<Servico> servicos; 
+ 
 	@Override
 	public String toString() {
 		return "TipoServico [id=" + id + ", nome=" + nome + ", valorado=" + valorado + "]";
@@ -79,5 +90,9 @@ public class TipoServico {
 
 	public Long getId() {
 		return id;
+	}
+
+	public Set<Servico> getServicos() {
+		return servicos;
 	}
 }

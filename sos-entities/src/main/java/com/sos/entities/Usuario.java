@@ -1,5 +1,7 @@
 package com.sos.entities;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,7 +14,9 @@ import javax.persistence.Table;
 @Entity
 @Table(name="usuario")
 @Inheritance(strategy=InheritanceType.JOINED) 
-public class Usuario {
+public class Usuario implements Serializable{
+
+	private static final long serialVersionUID = 3887499855081752472L;
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)

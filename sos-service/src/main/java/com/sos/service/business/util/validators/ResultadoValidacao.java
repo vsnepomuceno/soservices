@@ -1,4 +1,4 @@
-package com.sos.service.business.util;
+package com.sos.service.business.util.validators;
 
 import java.util.List;
 
