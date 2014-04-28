@@ -13,5 +13,7 @@ public class MyApplication extends ResourceConfig {
         register(TipoServicoAPI.class);
         register(ServicoAPI.class);
         register(CustomExceptionMapper.class);
+        register(UsuarioAPI.class);
+        register(PrestadorAPI.class);
     }
 }
