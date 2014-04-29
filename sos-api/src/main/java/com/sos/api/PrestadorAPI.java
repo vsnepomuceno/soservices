@@ -24,7 +24,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 
 @Path("prestador")
-@Component 
+@Component
 public class PrestadorAPI {
 
     @Autowired
