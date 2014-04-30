@@ -1,14 +1,18 @@
 package com.sos.entities;
 
 import java.io.Serializable;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -23,14 +27,17 @@ public class Usuario implements Serializable{
 	@Column(name="id", updatable=false)
 	private Long id;
 	
-	@Column(name="nome", nullable=false, length=200, unique=true)
+	@Column(name="nome", nullable=false, length=200)
 	private String nome;
 	
 	@Column(name="email", nullable=false, length=50, unique=true)
 	private String email;
 	
-	@Column(name="senha", nullable=false, length=20, unique=true)
+	@Column(name="senha", nullable=false, length=20)
 	private String senha;
+	
+	@OneToMany(mappedBy="usuario", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
+	private Set<Credencial> credenciais;
 
 	public String getNome() {
 		return nome;
