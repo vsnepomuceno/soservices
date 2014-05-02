@@ -1,7 +1,6 @@
 package com.sos.service.business;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +8,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.sos.entities.Prestador;
+import com.sos.service.business.util.validators.PrestadorValidator;
 import com.sos.service.business.util.validators.ResultadoValidacao;
-import com.sos.service.repository.PrestadorRepositorio;
+import com.sos.service.repository.PrestadorRepository;
 import com.sos.service.util.MessageUtil;
 import com.sos.service.util.exception.ServiceException;
 
@@ -19,19 +19,17 @@ public class PrestadorServiceImpl implements PrestadorService {
 
 	private final String PRESTADOR_NAO_ENCONTRADO = "exception.prestador_nao_encontrado";
 	private final String PRESTADOR_CPF_EXISTENTE = "exception.prestador_cpf_existente";
-	private final String PRESTADOR_CPF_OBRIGATORIO = "exception.prestador_cpf_obrigatorio";
-	private final String PRESTADOR_ENDERECO_OBRIGATORIO = "exception.prestador_endereco_obrigatorio";
-	private final String PRESTADOR_TELEFONE_OBRIGATORIO = "exception.prestador_telefone_obrigatorio";
 
 	@Autowired
-	PrestadorRepositorio prestadorRepository;
+	PrestadorRepository prestadorRepository;
+	@Autowired
+	GoogleMapsService googleMapsService;
 
 	@Override
 	public Prestador findByCodigo(Long codigo) throws ServiceException {
 		Prestador prestador = prestadorRepository.findOne(codigo);
 		if (prestador == null) {
-			throw new ServiceException(
-					MessageUtil.getMessageFromBundle(PRESTADOR_NAO_ENCONTRADO));
+			throw new ServiceException(MessageUtil.getMessageFromBundle(PRESTADOR_NAO_ENCONTRADO));
 		}
 		return prestador;
 	}
@@ -44,18 +42,16 @@ public class PrestadorServiceImpl implements PrestadorService {
 
 	@Override
 	public void create(Prestador prestador) throws ServiceException {
-		ResultadoValidacao resultadoValidacao = validarPrestador(prestador, false);
+		ResultadoValidacao resultadoValidacao = PrestadorValidator.validarCamposPrestador(prestador, false);
 
 		if (resultadoValidacao.isValido()) {
 			String cpf = prestador.getCpf();
-			Prestador prestadorPesquisado = prestadorRepository
-					.findByCpf(cpf);
+			Prestador prestadorPesquisado = prestadorRepository.findByCpf(cpf);
 
-			if (prestadorPesquisado == null) {
-				prestadorRepository.save(prestador);
+			if (prestadorPesquisado == null ) {
+				salvarPrestador(prestador);
 			} else {
-				String mensagem = MessageUtil
-						.getMessageFromBundle(PRESTADOR_CPF_EXISTENTE);
+				String mensagem = MessageUtil.getMessageFromBundle(PRESTADOR_CPF_EXISTENTE);
 				throw new ServiceException(MessageFormat.format(mensagem, cpf));
 			}
 		} else {
@@ -65,7 +61,21 @@ public class PrestadorServiceImpl implements PrestadorService {
 
 	@Override
 	public void update(Prestador prestador) throws ServiceException {
-		prestadorRepository.save(prestador);
+		ResultadoValidacao resultadoValidacao = PrestadorValidator.validarCamposPrestador(prestador, true);
+
+		if (resultadoValidacao.isValido()) {
+			String cpf = prestador.getCpf();
+			Prestador prestadorPesquisado = prestadorRepository.findByCpf(cpf);
+
+			if (prestadorPesquisado == null || prestadorPesquisado.getId().equals(prestador.getId())) {
+				salvarPrestador(prestador);
+			} else {
+				String mensagem = MessageUtil.getMessageFromBundle(PRESTADOR_CPF_EXISTENTE);
+				throw new ServiceException(MessageFormat.format(mensagem, cpf));
+			}
+		} else {
+			throw new ServiceException(resultadoValidacao.getMsgs());
+		}
 	}
 
 	@Override
@@ -77,28 +87,9 @@ public class PrestadorServiceImpl implements PrestadorService {
 	public Prestador findByCPF(String cpf) throws ServiceException {
 		return prestadorRepository.findByCpf(cpf);
 	}
-
 	
-
-	
-	private ResultadoValidacao validarPrestador(Prestador prestador, boolean editar){
-		boolean valido = true;
-		List<String> msgs = new ArrayList<String>();
-		if(prestador.getCpf()== null){
-			valido = false;
-			msgs.add(MessageUtil.getMessageFromBundle(PRESTADOR_CPF_OBRIGATORIO));
-		}
-		
-		if(prestador.getEndereco() == null){
-			valido = false;
-			msgs.add(MessageUtil.getMessageFromBundle(PRESTADOR_ENDERECO_OBRIGATORIO));
-		}
-		
-		if(prestador.getTelefone() == null){
-			valido = false;
-			msgs.add(MessageUtil.getMessageFromBundle(PRESTADOR_TELEFONE_OBRIGATORIO));
-		}
-		return new ResultadoValidacao(valido, msgs);
+	private void salvarPrestador(Prestador prestador){
+		googleMapsService.configurarLatLongEndereco(prestador.getEndereco());
+		prestadorRepository.save(prestador);
 	}
-
 }

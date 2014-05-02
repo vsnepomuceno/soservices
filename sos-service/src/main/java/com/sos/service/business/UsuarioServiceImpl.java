@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.sos.entities.Usuario;
 import com.sos.service.business.util.validators.ResultadoValidacao;
-import com.sos.service.repository.UsuarioRepositorio;
+import com.sos.service.repository.UsuarioRepository;
 import com.sos.service.util.MessageUtil;
 import com.sos.service.util.exception.ServiceException;
 
@@ -24,7 +24,7 @@ public class UsuarioServiceImpl implements UsuarioSevice {
 	private final String USUARIO_SENHA_OBRIGATORIO = "exception.usuario_senha_obrigatorio";
 
 	@Autowired
-	UsuarioRepositorio usuarioRepository;
+	UsuarioRepository usuarioRepository;
 
 	@Override
 	public Usuario findByCodigo(Long codigo) throws ServiceException {
@@ -48,14 +48,12 @@ public class UsuarioServiceImpl implements UsuarioSevice {
 
 		if (resultadoValidacao.isValido()) {
 			String nome = usuario.getNome();
-			Usuario usuarioPesquisado = usuarioRepository
-					.findByNome(nome);
+			Usuario usuarioPesquisado = usuarioRepository.findByNome(nome);
 
 			if (usuarioPesquisado == null) {
 				usuarioRepository.save(usuario);
 			} else {
-				String mensagem = MessageUtil
-						.getMessageFromBundle(USUARIO_NOME_EXISTENTE);
+				String mensagem = MessageUtil.getMessageFromBundle(USUARIO_NOME_EXISTENTE);
 				throw new ServiceException(MessageFormat.format(mensagem, nome));
 			}
 		} else {

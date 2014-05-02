@@ -1,12 +1,15 @@
 package com.sos.api;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
@@ -15,9 +18,8 @@ import org.codehaus.jettison.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.sos.entities.Endereco;
 import com.sos.entities.Prestador;
-import com.sos.entities.TipoServico;
-import com.sos.entities.Usuario;
 import com.sos.service.business.PrestadorService;
 import com.sos.service.util.exception.ServiceException;
 import com.thoughtworks.xstream.XStream;
@@ -35,7 +37,10 @@ public class PrestadorAPI {
     private final String PARAM_EMAIL = "email";
     private final String PARAM_SENHA = "senha";
     private final String PARAM_CPF = "cpf";
-    private final String PARAM_ENDERECO = "endereco";
+    private final String PARAM_LOGRADOURO = "logradouro";
+    private final String PARAM_NUMERO = "numero";
+    private final String PARAM_COMPLEMENTO = "complemento";
+    private final String PARAM_CEP = "cep";
     private final String PARAM_TELEFONE = "telefone";
     
     @GET
@@ -47,7 +52,8 @@ public class PrestadorAPI {
 			
 			XStream xStream = new XStream(new JettisonMappedXmlDriver());
 			xStream.setMode(XStream.NO_REFERENCES);
-			xStream.alias("tiposServicos", TipoServico.class);
+			xStream.alias("prestadores", Prestador.class);
+			xStream.omitField(Set.class, "credenciais");
 			
 			retorno = xStream.toXML(prestadores);
 		} catch (ServiceException e) {
@@ -65,16 +71,10 @@ public class PrestadorAPI {
     	String retorno = BLANK_RETURN;
     	try {
     		JSONObject jsonObject = new JSONObject(json);
-    		Usuario usuario = new Prestador();
-    		usuario.setNome(jsonObject.getString(PARAM_NOME));
-    		usuario.setEmail(jsonObject.getString(PARAM_EMAIL));
-    		usuario.setSenha(jsonObject.getString(PARAM_SENHA));
-    		((Prestador)usuario).setCpf(PARAM_CPF);
-    		((Prestador)usuario).setEndereco(PARAM_ENDERECO);
-    		((Prestador)usuario).setTelefone(PARAM_TELEFONE);
+    		Prestador prestador = new Prestador();
+    		configurarPrestador(prestador, jsonObject);
     		
-    		
-			prestadorService.create((Prestador)usuario);
+			prestadorService.create(prestador);
 		} catch (ServiceException e) {
 			//TODO Mostrar como vai ser mostrado a mensagem de erro para o cliente
 			e.printStackTrace();
@@ -87,7 +87,63 @@ public class PrestadorAPI {
     }
     
     @DELETE
-    public String removerPrestador(String json){
-    	return null;
+    @Path("{prestador}")
+    public void removerTipoServico(@PathParam("prestador") Long codigo){
+    	try {
+			Prestador prestador = prestadorService.findByCodigo(codigo);
+			if(prestador != null){
+				prestadorService.delete(prestador);
+			}else{
+				//TODO Saber qual mensagem passar para o usuário
+			}
+		} catch (ServiceException e) {
+			//TODO Saber qual mensagem passar para o usuário
+		} catch (Exception e) {
+			//TODO Saber qual mensagem passar para o usuário
+		}
+    }
+    
+    @PUT
+    @Path("{prestador}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public String editarPrestador(@PathParam("prestador") Long codigo, String json){
+    	String retorno = BLANK_RETURN;
+    	try{
+    		Prestador prestador = prestadorService.findByCodigo(codigo);
+    		if(prestador != null){
+    			JSONObject jsonObject = new JSONObject(json);
+    			configurarPrestador(prestador, jsonObject);
+    			
+    			prestadorService.update(prestador);
+    		}else{
+    			//TODO Saber qual mensagem passar para o usuário
+    		}
+    	}catch(ServiceException e){
+    		//TODO Saber qual mensagem passar para o usuário
+    	}catch (Exception e) {
+    		//TODO Saber qual mensagem passar para o usuário
+		}
+    	return retorno;
+    }
+    
+    private void configurarPrestador(Prestador prestador, JSONObject jsonObject) throws JSONException{
+    	prestador.setNome(jsonObject.getString(PARAM_NOME));
+		prestador.setEmail(jsonObject.getString(PARAM_EMAIL));
+		prestador.setSenha(jsonObject.getString(PARAM_SENHA));
+		prestador.setCpf(jsonObject.getString(PARAM_CPF));
+		prestador.setTelefone(jsonObject.getString(PARAM_TELEFONE));
+
+		Endereco endereco = null;
+		if(prestador.getEndereco() == null){
+			endereco = new Endereco();
+		}else{
+			endereco = prestador.getEndereco();
+		}
+		endereco.setLogradouro(jsonObject.getString(PARAM_LOGRADOURO));
+		endereco.setNumero(jsonObject.getInt(PARAM_NUMERO));
+		endereco.setComplemento(jsonObject.getString(PARAM_COMPLEMENTO));
+		endereco.setCep(jsonObject.getString(PARAM_CEP));
+		prestador.setEndereco(endereco);
     }
 }

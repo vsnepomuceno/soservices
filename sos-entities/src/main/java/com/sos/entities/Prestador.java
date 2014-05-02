@@ -2,10 +2,13 @@ package com.sos.entities;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
@@ -20,10 +23,11 @@ public class Prestador extends Usuario implements Serializable{
 	@Column(name = "cpf", nullable = false, length = 200, unique = true)
 	private String cpf;
 
-	@Column(name = "endereco", nullable = false, length = 200, unique = true)
-	private String endereco;
+	@OneToOne(optional=false, cascade=CascadeType.ALL)
+	@JoinColumn(name="endereco_id")
+	private Endereco endereco;
 
-	@Column(name = "telefone", nullable = false, length = 200, unique = true)
+	@Column(name = "telefone", nullable = false, length = 20)
 	private String telefone;
 
 	public String getCpf() {
@@ -34,11 +38,11 @@ public class Prestador extends Usuario implements Serializable{
 		this.cpf = cpf;
 	}
 
-	public String getEndereco() {
+	public Endereco getEndereco() {
 		return endereco;
 	}
 
-	public void setEndereco(String endereco) {
+	public void setEndereco(Endereco endereco) {
 		this.endereco = endereco;
 	}
 
@@ -49,14 +53,19 @@ public class Prestador extends Usuario implements Serializable{
 	public void setTelefone(String telefone) {
 		this.telefone = telefone;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "Prestador [cpf=" + cpf + ", telefone=" + telefone + "]";
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
+		int result = super.hashCode();
 		result = prime * result + ((cpf == null) ? 0 : cpf.hashCode());
-		result = prime * result + ((endereco == null) ? 0 : endereco.hashCode());
-		result = prime * result + ((telefone == null) ? 0 : telefone.hashCode());
+		result = prime * result
+				+ ((telefone == null) ? 0 : telefone.hashCode());
 		return result;
 	}
 
@@ -64,21 +73,15 @@ public class Prestador extends Usuario implements Serializable{
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
+		if (!super.equals(obj))
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
 		Prestador other = (Prestador) obj;
-		
 		if (cpf == null) {
 			if (other.cpf != null)
 				return false;
 		} else if (!cpf.equals(other.cpf))
-			return false;
-		if (endereco == null) {
-			if (other.endereco != null)
-				return false;
-		} else if (!endereco.equals(other.endereco))
 			return false;
 		if (telefone == null) {
 			if (other.telefone != null)
@@ -87,6 +90,4 @@ public class Prestador extends Usuario implements Serializable{
 			return false;
 		return true;
 	}
-
-
 }
