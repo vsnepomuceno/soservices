@@ -15,7 +15,6 @@ import org.codehaus.jettison.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.sos.entities.TipoServico;
 import com.sos.entities.Usuario;
 import com.sos.service.business.UsuarioSevice;
 import com.sos.service.util.exception.ServiceException;
@@ -42,8 +41,8 @@ public class UsuarioAPI {
 			List<Usuario> usuarios = usuarioService.findAllSortByName();
 			
 			XStream xStream = new XStream(new JettisonMappedXmlDriver());
-			xStream.setMode(XStream.NO_REFERENCES);
-			xStream.alias("tiposServicos", TipoServico.class);
+			xStream.setMode(XStream.ID_REFERENCES);
+			xStream.alias("usuario", Usuario.class);
 			
 			retorno = xStream.toXML(usuarios);
 		} catch (ServiceException e) {

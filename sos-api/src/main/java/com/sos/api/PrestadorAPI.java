@@ -51,7 +51,7 @@ public class PrestadorAPI {
 			List<Prestador> prestadores = prestadorService.findAllSortByName();
 			
 			XStream xStream = new XStream(new JettisonMappedXmlDriver());
-			xStream.setMode(XStream.NO_REFERENCES);
+			xStream.setMode(XStream.ID_REFERENCES);
 			xStream.alias("prestadores", Prestador.class);
 			xStream.omitField(Set.class, "credenciais");
 			

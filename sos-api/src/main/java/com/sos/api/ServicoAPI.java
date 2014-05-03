@@ -46,7 +46,7 @@ public class ServicoAPI {
 			List<Servico> servicos = servicoService.findAllSortByDescricao();
 			
 			XStream xStream = new XStream(new JettisonMappedXmlDriver());
-			xStream.setMode(XStream.NO_REFERENCES);
+			xStream.setMode(XStream.ID_REFERENCES);
 			xStream.alias("servicos", Servico.class);
 			
 			retorno = xStream.toXML(servicos);

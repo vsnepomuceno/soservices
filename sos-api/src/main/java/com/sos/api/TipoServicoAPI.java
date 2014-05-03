@@ -42,7 +42,7 @@ public class TipoServicoAPI {
 			List<TipoServico> tiposServicos = tipoServicoService.findAllSortByName();
 			
 			XStream xStream = new XStream(new JettisonMappedXmlDriver());
-			xStream.setMode(XStream.NO_REFERENCES);
+			xStream.setMode(XStream.ID_REFERENCES);
 			xStream.alias("tiposServicos", TipoServico.class);
 			
 			retorno = xStream.toXML(tiposServicos);
