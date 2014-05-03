@@ -39,6 +39,8 @@ public class GoogleMapsServiceImpl implements GoogleMapsService{
 			sb.append(endereco.getLogradouro());
 			sb.append(", ");
 			sb.append(endereco.getNumero());
+			sb.append(", ");
+			sb.append(endereco.getCep());
 			jsonResult = new JSONObject(getJSONByGoogle(sb.toString()));
 			JSONArray jsonArrayResult = jsonResult.getJSONArray("results");
 			
