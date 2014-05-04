@@ -42,6 +42,8 @@ public class PrestadorAPI {
     private final String PARAM_COMPLEMENTO = "complemento";
     private final String PARAM_CEP = "cep";
     private final String PARAM_TELEFONE = "telefone";
+    private final String PARAM_CIDADE = "cidade";
+    private final String PARAM_ESTADO = "estado";
     
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -144,6 +146,8 @@ public class PrestadorAPI {
 		endereco.setNumero(jsonObject.getInt(PARAM_NUMERO));
 		endereco.setComplemento(jsonObject.getString(PARAM_COMPLEMENTO));
 		endereco.setCep(jsonObject.getString(PARAM_CEP));
+		endereco.setCidade(jsonObject.getString(PARAM_CIDADE));
+		endereco.setEstado(jsonObject.getString(PARAM_ESTADO));
 		prestador.setEndereco(endereco);
     }
 }

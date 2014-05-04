@@ -21,9 +21,10 @@ public class ServicoAPITest {
 		con.setRequestMethod("POST");
 		con.addRequestProperty("Content-Type", "application/json");
  
-		String urlParameters = "{\"descricao\":\"Fazendo um teste.\",\"valor\":25.00, \"id_tipo_servico\": 3}";
+		String urlParameters = "{\"descricao\":\"Fazendo um teste para você.\",\"valor\":25.00, \"id_tipo_servico\": 1}";
  
 		// Send post request
+		con.addRequestProperty("charset", "UTF-8");
 		con.setDoOutput(true);
 		DataOutputStream wr = new DataOutputStream(con.getOutputStream());
 		wr.writeBytes(urlParameters);

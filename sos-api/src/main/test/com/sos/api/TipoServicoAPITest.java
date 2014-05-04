@@ -19,9 +19,10 @@ public class TipoServicoAPITest {
  
 		//add reuqest header
 		con.setRequestMethod("POST");
-		con.addRequestProperty("Content-Type", "application/json");
- 
-		String urlParameters = "{\"nome\":\"Eletricista\",\"valorado\":false}";
+		con.setRequestProperty("Content-Type", "application/json");
+		con.setRequestProperty("Accept-Charset", "UTF-8");
+		
+		String urlParameters = "{\"nome\":\"Ájuda Dê ;. %$\",\"valorado\":false}";
  
 		// Send post request
 		con.setDoOutput(true);

@@ -22,8 +22,8 @@ public class PrestadorAPITest {
 		con.addRequestProperty("Content-Type", "application/json");
  
 		String urlParameters = "{\"nome\":\"Diogo Peixoto\",\"email\":\"peixotoo@gmail.com\", \"senha\": \"12345\", \"cpf\":\"073.758.824-10\","
-				+ "\"logradouro\": \"Rua José Bonifácio\", \"numero\": 169, \"complemento\": \"Apartamento 401\", \"cep\": \"50710-435\","
-				+ "\"telefone\": \"(81) 8777-1988\"}";
+				+ "\"logradouro\": \"Rua Jose Bonifacio\", \"numero\": 169, \"complemento\": \"Apartamento 401\", \"cep\": \"50710-435\","
+				+ "\"telefone\": \"(81) 8777-1988\", \"cidade\": \"Recife\", \"estado\": \"Pernambuco\"}";
  
 		// Send post request
 		con.setDoOutput(true);
@@ -67,7 +67,7 @@ public class PrestadorAPITest {
 
 	@Test
 	public void editarPrestador() throws IOException{
-		String url = "http://localhost:8080/sos-api/prestador/2";
+		String url = "http://localhost:8080/sos-api/prestador/1";
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
  
@@ -77,8 +77,8 @@ public class PrestadorAPITest {
  
 		String urlParameters = "{\"nome\":\"Diogo Peixoto\",\"email\":\"diogopeixoto@hotmail.com\", \"senha\": \"12345\", "
 				+ "\"cpf\":\"073.758.824-10\","
-				+ "\"logradouro\": \"Rua José Bonifácio\", \"numero\": 154, \"complemento\": \"Apartamento 303\", \"cep\": \"50710-435\","
-				+ "\"telefone\": \"(81) 8777-1988\"}";
+				+ "\"logradouro\": \"Rua Jose Bonifacio\", \"numero\": 154, \"complemento\": \"Apartamento 303\", \"cep\": \"50710-435\","
+				+ "\"telefone\": \"(81) 8777-1988\", \"cidade\": \"Recife\", \"estado\": \"Pernambuco\"}";
 		
 		// Send post request
 		con.setDoOutput(true);

@@ -29,6 +29,12 @@ public class Endereco implements Serializable {
 	@Column(name="complemento", length=50)
 	private String complemento;
 	
+	@Column(name="cidade", length=100, nullable=false)
+	private String cidade;
+	
+	@Column(name="estado", length=100, nullable=false)
+	private String estado;
+	
 	@Column(name="cep", nullable = false, length=10)
 	private String cep;
 
@@ -154,5 +160,21 @@ public class Endereco implements Serializable {
 
 	public Long getId() {
 		return id;
+	}
+
+	public String getCidade() {
+		return cidade;
+	}
+
+	public void setCidade(String cidade) {
+		this.cidade = cidade;
+	}
+
+	public String getEstado() {
+		return estado;
+	}
+
+	public void setEstado(String estado) {
+		this.estado = estado;
 	}
 }
