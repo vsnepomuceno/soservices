@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.sos.entities.Usuario;
 import com.sos.service.business.util.validators.ResultadoValidacao;
@@ -27,22 +28,24 @@ public class UsuarioServiceImpl implements UsuarioSevice {
 	UsuarioRepository usuarioRepository;
 
 	@Override
+	@Transactional(readOnly=true)
 	public Usuario findByCodigo(Long codigo) throws ServiceException {
 		Usuario usuario = usuarioRepository.findOne(codigo);
 		if (usuario == null) {
-			throw new ServiceException(
-					MessageUtil.getMessageFromBundle(USUARIO_NAO_ENCONTRADO));
+			throw new ServiceException(MessageUtil.getMessageFromBundle(USUARIO_NAO_ENCONTRADO));
 		}
 		return usuario;
 	}
 
 	@Override
+	@Transactional(readOnly=true)
 	public List<Usuario> findAllSortByName() throws ServiceException {
 		Sort sort = new Sort(Sort.Direction.ASC, "nome");
 		return usuarioRepository.findAll(sort);
 	}
 
 	@Override
+	@Transactional
 	public void create(Usuario usuario) throws ServiceException {
 		ResultadoValidacao resultadoValidacao = validarUsuario(usuario, false);
 
@@ -62,21 +65,25 @@ public class UsuarioServiceImpl implements UsuarioSevice {
 	}
 
 	@Override
+	@Transactional
 	public void update(Usuario usuario) throws ServiceException {
 		usuarioRepository.save(usuario);
 	}
 
 	@Override
+	@Transactional
 	public void delete(Usuario usuario) throws ServiceException {
 		usuarioRepository.delete(usuario);
 	}
 
 	@Override
+	@Transactional(readOnly=true)
 	public Usuario findByNome(String nome) throws ServiceException {
 		return usuarioRepository.findByNome(nome);
 	}
 
 	@Override
+	@Transactional(readOnly=true)
 	public Usuario findByEmail(String email) throws ServiceException {
 		return usuarioRepository.findByEmail(email);
 	}
@@ -100,5 +107,4 @@ public class UsuarioServiceImpl implements UsuarioSevice {
 		}
 		return new ResultadoValidacao(valido, msgs);
 	}
-
 }

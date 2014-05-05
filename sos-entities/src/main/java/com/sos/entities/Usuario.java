@@ -36,8 +36,8 @@ public class Usuario implements Serializable{
 	@Column(name="senha", nullable=false, length=20)
 	private String senha;
 	
-	@OneToMany(mappedBy="usuario", fetch=FetchType.LAZY, cascade=CascadeType.ALL)
-	private Set<Credencial> credenciais;
+	@OneToMany(mappedBy="usuario", fetch=FetchType.LAZY, cascade=CascadeType.ALL, orphanRemoval=false)
+	private Set<Token> credenciais;
 
 	public String getNome() {
 		return nome;

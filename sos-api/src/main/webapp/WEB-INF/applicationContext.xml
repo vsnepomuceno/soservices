@@ -5,9 +5,10 @@
   http://www.springframework.org/schema/context
   http://www.springframework.org/schema/context/spring-context.xsd">
 
-	<bean id="tipoServicoService" class="com.sos.service.business.TipoServicoServiceImpl" />
-	<bean id="servicoService" class="com.sos.service.business.ServicoServiceImpl" />
 	<bean id="googleMapsService" class="com.sos.service.business.GoogleMapsServiceImpl" />
+	<bean id="servicoService" class="com.sos.service.business.ServicoServiceImpl" />
+	<bean id="tipoServicoService" class="com.sos.service.business.TipoServicoServiceImpl" />
+	<bean id="tokenGeneratorService" class="com.sos.service.business.TokenGeneratorServiceImpl" />
 	<bean class="com.sos.api.TipoServicoAPI" scope="request" />
 	<bean class="com.sos.api.ServicoAPI" scope="request" />
 	<bean class="com.sos.api.CustomExceptionMapper" />
@@ -16,4 +17,4 @@
 	
 	<context:annotation-config />
 	<context:component-scan base-package="com.sos.service" />
-</beans>
+</beans> 

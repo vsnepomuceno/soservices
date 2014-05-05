@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.sos.entities.Prestador;
 import com.sos.service.business.util.validators.PrestadorValidator;
@@ -26,6 +27,7 @@ public class PrestadorServiceImpl implements PrestadorService {
 	GoogleMapsService googleMapsService;
 
 	@Override
+	@Transactional(readOnly=true)
 	public Prestador findByCodigo(Long codigo) throws ServiceException {
 		Prestador prestador = prestadorRepository.findOne(codigo);
 		if (prestador == null) {
@@ -35,12 +37,14 @@ public class PrestadorServiceImpl implements PrestadorService {
 	}
 
 	@Override
+	@Transactional(readOnly=true)
 	public List<Prestador> findAllSortByName() throws ServiceException {
 		Sort sort = new Sort(Sort.Direction.ASC, "nome");
 		return prestadorRepository.findAll(sort);
 	}
 
 	@Override
+	@Transactional
 	public void create(Prestador prestador) throws ServiceException {
 		ResultadoValidacao resultadoValidacao = PrestadorValidator.validarCamposPrestador(prestador, false);
 
@@ -60,6 +64,7 @@ public class PrestadorServiceImpl implements PrestadorService {
 	}
 
 	@Override
+	@Transactional
 	public void update(Prestador prestador) throws ServiceException {
 		ResultadoValidacao resultadoValidacao = PrestadorValidator.validarCamposPrestador(prestador, true);
 
@@ -79,11 +84,13 @@ public class PrestadorServiceImpl implements PrestadorService {
 	}
 
 	@Override
+	@Transactional
 	public void delete(Prestador prestador) throws ServiceException {
 		prestadorRepository.delete(prestador);
 	}
 
 	@Override
+	@Transactional(readOnly=true)
 	public Prestador findByCPF(String cpf) throws ServiceException {
 		return prestadorRepository.findByCpf(cpf);
 	}
