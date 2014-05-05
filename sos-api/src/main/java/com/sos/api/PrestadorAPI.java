@@ -66,7 +66,11 @@ public class PrestadorAPI {
 			e.printStackTrace();
 		}
 		
-        return callback + "(" +retorno+ ")";
+		if (callback != null) {
+			retorno = callback + "(" +retorno+ ")";
+		}
+		
+        return retorno;
     }
     
     @POST
