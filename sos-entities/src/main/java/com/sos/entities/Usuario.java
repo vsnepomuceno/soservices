@@ -3,7 +3,6 @@ package com.sos.entities;
 import java.io.Serializable;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -36,7 +35,7 @@ public class Usuario implements Serializable{
 	@Column(name="senha", nullable=false, length=20)
 	private String senha;
 	
-	@OneToMany(mappedBy="usuario", fetch=FetchType.LAZY, cascade=CascadeType.ALL, orphanRemoval=false)
+	@OneToMany(mappedBy="usuario", fetch=FetchType.LAZY, orphanRemoval=false)
 	private Set<Token> credenciais;
 
 	public String getNome() {
