@@ -47,7 +47,7 @@ public class PrestadorAPI {
     
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public String getPrestadores() {
+    public String getPrestadores(String callback) {
     	String retorno = BLANK_RETURN;
 		try {
 			List<Prestador> prestadores = prestadorService.findAllSortByName();
@@ -63,7 +63,7 @@ public class PrestadorAPI {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-        return retorno;
+        return callback + "(" +retorno+ ")";
     }
     
     @POST
