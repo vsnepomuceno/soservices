@@ -46,7 +46,7 @@ public class PrestadorServiceImpl implements PrestadorService {
 	@Override
 	@Transactional
 	public void create(Prestador prestador) throws ServiceException {
-		ResultadoValidacao resultadoValidacao = PrestadorValidator.validarCamposPrestador(prestador, false);
+		ResultadoValidacao resultadoValidacao = PrestadorValidator.validarCamposPrestador(prestador);
 
 		if (resultadoValidacao.isValido()) {
 			String cpf = prestador.getCpf();
@@ -66,7 +66,7 @@ public class PrestadorServiceImpl implements PrestadorService {
 	@Override
 	@Transactional
 	public void update(Prestador prestador) throws ServiceException {
-		ResultadoValidacao resultadoValidacao = PrestadorValidator.validarCamposPrestador(prestador, true);
+		ResultadoValidacao resultadoValidacao = PrestadorValidator.validarCamposPrestador(prestador);
 
 		if (resultadoValidacao.isValido()) {
 			String cpf = prestador.getCpf();

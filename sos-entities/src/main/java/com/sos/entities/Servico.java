@@ -22,7 +22,7 @@ public class Servico implements Serializable {
 	@Column(name="id", updatable=false)
 	private Long id;
 	
-	@Column(name="valor", nullable=false)
+	@Column(name="valor")
 	private Double valor;
 	
 	@ManyToOne 
