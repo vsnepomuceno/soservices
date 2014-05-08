@@ -8,16 +8,23 @@ import com.sos.service.util.MessageUtil;
 
 public class ServicoValidator {
 
+	private static final String SERVICO_NULO = "exception.servico_nulo";
 	private static final String SERVICO_DESCRICAO_OBRIGATORIA = "exception.servico_descricao_obrigatoria";
 	private static final String SERVICO_TIPO_SERVICO_OBRIGATORIO = "exception.servico_tipo_servico_obrigatorio";
 	private static final String SERVICO_PRESTADOR_OBRIGATORIO = "exception.servico_prestador_obrigatorio";
-	private static final String SERVICO_VALOR_OBRIGATORIO = "exception.servico_valor_obrigatorio";
 	private static final String SERVICO_VALOR_NAO_POSITIVO = "exception.servico_valor_nao_positivo";
+	private static final String SERVICO_TIPO_SERVICO_NAO_VALORADO = "exception.servico_tipo_servico_nao_valorado";
+	private static final String SERVICO_TIPO_SERVICO_NAO_VALORADO_OBRIGATORIO = "exception.servico_tipo_servico_nao_valorado_obrigatorio";
 	
-	public static ResultadoValidacao validarCamposServico(Servico servico, boolean editar){
+	public static ResultadoValidacao validarCamposServico(Servico servico){
 		List<String> msgs = new ArrayList<String>();
-		boolean valido = validarDescricao(servico, msgs) && validarTipoServico(servico, msgs) 
-				&& validarValor(servico, msgs) && validarPrestador(servico, msgs);
+		boolean valido = false;
+		if(servico != null){
+			valido = validarDescricao(servico, msgs) && validarTipoServico(servico, msgs) 
+					&& validarValor(servico, msgs) && validarPrestador(servico, msgs);
+		}else{
+			msgs.add(MessageUtil.getMessageFromBundle(SERVICO_NULO));
+		}
 		return new ResultadoValidacao(valido, msgs);
 	}
 	
@@ -41,19 +48,28 @@ public class ServicoValidator {
 	
 	private static boolean validarValor(Servico servico, List<String> msgs){
 		boolean valido = true;
-		if(servico.getValor() == null){
+		if(servico.getTipoServico().isValorado() != null){
+			if(servico.getTipoServico().isValorado()){
+				if(servico.getValor() == null || servico.getValor() <= 0){
+					valido = false;
+					msgs.add(MessageUtil.getMessageFromBundle(SERVICO_VALOR_NAO_POSITIVO));
+				}
+			}else{
+				if(servico.getValor() != null){
+					valido = false;
+					msgs.add(MessageUtil.getMessageFromBundle(SERVICO_TIPO_SERVICO_NAO_VALORADO));
+				}
+			}
+		}else{
 			valido = false;
-			msgs.add(MessageUtil.getMessageFromBundle(SERVICO_VALOR_OBRIGATORIO));
-		}else if(servico.getValor() <= 0){
-			valido = false;
-			msgs.add(MessageUtil.getMessageFromBundle(SERVICO_VALOR_NAO_POSITIVO));
+			msgs.add(MessageUtil.getMessageFromBundle(SERVICO_TIPO_SERVICO_NAO_VALORADO_OBRIGATORIO));
 		}
 		return valido;
 	}
 	
 	private static boolean validarPrestador(Servico servico, List<String> msgs){
 		boolean valido = true;
-		if(servico.getPrestador() == null || servico.getPrestador().getId() == null){
+		if(servico.getPrestador() == null){
 			valido = false;
 			msgs.add(MessageUtil.getMessageFromBundle(SERVICO_PRESTADOR_OBRIGATORIO));
 		}

@@ -34,7 +34,7 @@ public class Prestador extends Usuario implements Serializable{
 	@Column(name = "telefone", nullable = false, length = 20)
 	private String telefone;
 
-	@OneToMany(mappedBy="prestador", fetch=FetchType.LAZY, orphanRemoval=false)
+	@OneToMany(mappedBy="prestador", fetch=FetchType.LAZY, orphanRemoval=true)
 	private Set<Servico> servicos;
 	
 	public String getCpf() {

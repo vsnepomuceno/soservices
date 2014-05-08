@@ -61,7 +61,7 @@ public class ServicoServiceImpl implements ServicoService {
 	@Override
 	@Transactional
 	public void create(Servico servico) throws ServiceException {
-		ResultadoValidacao resultadoValidacao = ServicoValidator.validarCamposServico(servico, false);
+		ResultadoValidacao resultadoValidacao = ServicoValidator.validarCamposServico(servico);
 		
 		if(resultadoValidacao.isValido()){
 			servicoRepository.save(servico);
@@ -73,7 +73,7 @@ public class ServicoServiceImpl implements ServicoService {
 	@Override
 	@Transactional
 	public void update(Servico servico) throws ServiceException {
-		ResultadoValidacao resultadoValidacao = ServicoValidator.validarCamposServico(servico, true);
+		ResultadoValidacao resultadoValidacao = ServicoValidator.validarCamposServico(servico);
 		
 		if(resultadoValidacao.isValido()){
 			servicoRepository.save(servico);

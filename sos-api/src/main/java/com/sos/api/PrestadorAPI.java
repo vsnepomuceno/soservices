@@ -11,6 +11,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.codehaus.jettison.json.JSONException;
@@ -47,7 +48,8 @@ public class PrestadorAPI {
     
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public String getPrestadores() {
+    @Consumes(MediaType.TEXT_PLAIN)
+    public String getPrestadores(@QueryParam("callback") String callback) {
     	String retorno = BLANK_RETURN;
 		try {
 			List<Prestador> prestadores = prestadorService.findAllSortByName();
@@ -63,6 +65,11 @@ public class PrestadorAPI {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		if (callback != null) {
+			retorno = callback + "(" +retorno+ ")";
+		}
+		
         return retorno;
     }
     
@@ -90,7 +97,7 @@ public class PrestadorAPI {
     
     @DELETE
     @Path("{prestador}")
-    public void removerTipoServico(@PathParam("prestador") Long codigo){
+    public void removerPrestador(@PathParam("prestador") Long codigo){
     	try {
 			Prestador prestador = prestadorService.findByCodigo(codigo);
 			if(prestador != null){
