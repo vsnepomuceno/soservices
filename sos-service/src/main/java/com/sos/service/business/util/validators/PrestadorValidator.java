@@ -7,8 +7,8 @@ import com.sos.service.util.MessageUtil;
 
 public class PrestadorValidator extends UsuarioValidator{
 
-	private static final String PRESTADOR_CPF_OBRIGATORIO = "exception.prestador_cpf";
-	private static final String PRESTRADOR_TELEFONE_OBRIGATORIO = "exception.prestador_telefone";
+	private static final String PRESTADOR_CPF_OBRIGATORIO = "exception.prestador_cpf_obrigatorio";
+	private static final String PRESTRADOR_TELEFONE_OBRIGATORIO = "exception.prestador_telefone_obrigatorio";
 	
 	public static ResultadoValidacao validarCamposPrestador(Prestador prestador, boolean editar){
 		ResultadoValidacao resultadoValidacaoUsuario = validarCamposUsuario(prestador, editar);

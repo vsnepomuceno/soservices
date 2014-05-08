@@ -1,6 +1,7 @@
 package com.sos.entities;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -64,6 +65,13 @@ public class Usuario implements Serializable{
 	
 	public Long getId() {
 		return id;
+	}
+
+	public Set<Token> getCredenciais() {
+		if(credenciais == null){
+			credenciais = new HashSet<Token>();
+		}
+		return credenciais;
 	}
 
 	@Override

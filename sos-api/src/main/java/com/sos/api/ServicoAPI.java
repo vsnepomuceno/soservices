@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.sos.entities.Servico;
+import com.sos.service.business.PrestadorService;
 import com.sos.service.business.ServicoService;
 import com.sos.service.business.TipoServicoService;
 import com.sos.service.util.exception.ServiceException;
@@ -32,11 +33,14 @@ public class ServicoAPI {
     private ServicoService servicoService;
     @Autowired
     private TipoServicoService tipoServicoService;
+    @Autowired
+    private PrestadorService  prestadorService;
 
     private final String BLANK_RETURN = "{}";
     private final String PARAM_VALOR = "valor";
     private final String PARAM_DESCRICAO = "descricao";
     private final String PARAM_ID_TIPO_SERVICO = "id_tipo_servico";
+    private final String PARAM_ID_PRESTADOR = "id_prestador";
     
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -125,5 +129,6 @@ public class ServicoAPI {
     	servico.setDescricao(jsonObject.getString(PARAM_DESCRICAO));
 		servico.setValor(jsonObject.getDouble(PARAM_VALOR));
 		servico.setTipoServico(tipoServicoService.findByCodigo(jsonObject.getLong(PARAM_ID_TIPO_SERVICO)));
+		servico.setPrestador(prestadorService.findByCodigo(jsonObject.getLong(PARAM_ID_PRESTADOR)));
     }
 }

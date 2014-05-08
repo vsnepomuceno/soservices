@@ -18,6 +18,7 @@ import com.sos.entities.Endereco;
 public class GoogleMapsServiceImpl implements GoogleMapsService{
 
 	private static final String URL = "http://maps.googleapis.com/maps/api/geocode/json";
+	private static final String SEPERADOR_ENDERECO = ", ";
 	
 	private String getJSONByGoogle(String endereco) throws IOException {
 
@@ -37,9 +38,13 @@ public class GoogleMapsServiceImpl implements GoogleMapsService{
 		try {
 			StringBuilder sb = new StringBuilder();
 			sb.append(endereco.getLogradouro());
-			sb.append(", ");
+			sb.append(SEPERADOR_ENDERECO);
 			sb.append(endereco.getNumero());
-			sb.append(", ");
+			sb.append(SEPERADOR_ENDERECO);
+			sb.append(endereco.getCidade());
+			sb.append(SEPERADOR_ENDERECO);
+			sb.append(endereco.getEstado());
+			sb.append(SEPERADOR_ENDERECO);
 			sb.append(endereco.getCep());
 			jsonResult = new JSONObject(getJSONByGoogle(sb.toString()));
 			JSONArray jsonArrayResult = jsonResult.getJSONArray("results");

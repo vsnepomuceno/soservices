@@ -29,6 +29,10 @@ public class Servico implements Serializable {
     @JoinColumn(name="tipo_servico_id", nullable=false)
 	private TipoServico tipoServico;
 	
+	@ManyToOne
+	@JoinColumn(name="prestador_id", updatable=false)
+	private Prestador prestador;
+	
 	@Column(name="descricao", nullable=false, length=500)
 	private String descricao;
 
@@ -101,5 +105,13 @@ public class Servico implements Serializable {
 
 	public Long getId() {
 		return id;
+	}
+
+	public Prestador getPrestador() {
+		return prestador;
+	}
+
+	public void setPrestador(Prestador prestador) {
+		this.prestador = prestador;
 	}
 }

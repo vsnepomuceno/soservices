@@ -1,6 +1,7 @@
 package com.sos.entities;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -93,6 +94,9 @@ public class TipoServico implements Serializable{
 	}
 
 	public Set<Servico> getServicos() {
+		if(servicos == null){
+			servicos = new HashSet<Servico>();
+		}
 		return servicos;
 	}
 }

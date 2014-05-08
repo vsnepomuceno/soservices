@@ -1,13 +1,17 @@
 package com.sos.entities;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
@@ -30,6 +34,9 @@ public class Prestador extends Usuario implements Serializable{
 	@Column(name = "telefone", nullable = false, length = 20)
 	private String telefone;
 
+	@OneToMany(mappedBy="prestador", fetch=FetchType.LAZY, orphanRemoval=false)
+	private Set<Servico> servicos;
+	
 	public String getCpf() {
 		return cpf;
 	}
@@ -57,6 +64,13 @@ public class Prestador extends Usuario implements Serializable{
 	@Override
 	public String toString() {
 		return "Prestador [cpf=" + cpf + ", telefone=" + telefone + "]";
+	}
+
+	public Set<Servico> getServicos() {
+		if(servicos == null){
+			servicos = new HashSet<Servico>();
+		}
+		return servicos;
 	}
 
 	@Override
