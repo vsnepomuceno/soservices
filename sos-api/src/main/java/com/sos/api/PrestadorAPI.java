@@ -19,6 +19,7 @@ import org.codehaus.jettison.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.sos.api.util.CallBackUtil;
 import com.sos.entities.Endereco;
 import com.sos.entities.Prestador;
 import com.sos.service.business.PrestadorService;
@@ -49,7 +50,7 @@ public class PrestadorAPI {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.TEXT_PLAIN)
-    public String getPrestadores(@QueryParam("callback") String callback) {
+    public String pesquisarPrestadores(@QueryParam("callback") String callback) {
     	String retorno = BLANK_RETURN;
 		try {
 			List<Prestador> prestadores = prestadorService.findAllSortByName();
@@ -65,12 +66,7 @@ public class PrestadorAPI {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		if (callback != null) {
-			retorno = callback + "(" +retorno+ ")";
-		}
-		
-        return retorno;
+        return CallBackUtil.checarCallback(callback, retorno);
     }
     
     @POST
@@ -97,7 +93,8 @@ public class PrestadorAPI {
     
     @DELETE
     @Path("{prestador}")
-    public void removerPrestador(@PathParam("prestador") Long codigo){
+    @Consumes(MediaType.TEXT_PLAIN)
+    public void removerPrestador(@PathParam("prestador") Long codigo, @QueryParam("callback") String callback){
     	try {
 			Prestador prestador = prestadorService.findByCodigo(codigo);
 			if(prestador != null){

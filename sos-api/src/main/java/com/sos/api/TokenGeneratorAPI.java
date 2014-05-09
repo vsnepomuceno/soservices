@@ -33,7 +33,7 @@ public class TokenGeneratorAPI {
     private final String BLANK_RETURN = "{}";
     private final String PARAM_SENHA = "senha";
     private final String PARAM_EMAIL = "email";
-    private final String PARAM_TOKEN = "token";
+    private final String PARAM_APIKEY = "apikey";
    
     @POST
     @Path("{token}")
@@ -51,6 +51,7 @@ public class TokenGeneratorAPI {
     				XStream xStream = new XStream(new JettisonMappedXmlDriver());
     				xStream.setMode(XStream.ID_REFERENCES);
     				xStream.alias("token", Token.class);
+    				xStream.omitField(Usuario.class, "usuario");
     				
     				retorno = xStream.toXML(token);
     			}else{
@@ -68,28 +69,41 @@ public class TokenGeneratorAPI {
     }
     
     @DELETE
-    @Path("{token}")
-    public void removerToken(@PathParam("token") Long codigo, String json){
+    @Path("/{logout}/{token}")
+    public void removerToken(@PathParam("logout") String logout, @PathParam("token") Long codigo, String json){
     	try {
     		Usuario usuario = usuarioSevice.findByCodigo(codigo);
 			if(usuario != null){
 				JSONObject jsonObject = new JSONObject(json);
-				Token token = tokenGeneratorService.findByApiKeyAndUsuarioId(jsonObject.getString(PARAM_TOKEN), codigo);
-				if(token != null){
-					tokenGeneratorService.delete(token);
+
+				if(logout.equalsIgnoreCase("logout")){
+					Token token = new Token();
+					configurarToken(token, usuario, jsonObject);
+					
+					Token tokenPesquisado = tokenGeneratorService.findByApiKeyAndUsuarioId(token.getApiKey(), codigo);
+					if(tokenPesquisado != null){
+						tokenGeneratorService.delete(tokenPesquisado);
+					}
+				}else if(logout.equalsIgnoreCase("logoutAll")){
+					tokenGeneratorService.deleteAllByUsuario(usuario);
 				}
 			}else{
 				//TODO Saber qual mensagem passar para o usuário
 			}
 		} catch (ServiceException e) {
-			//TODO Saber qual mensagem passar para o usuário
+			e.printStackTrace();
 		} catch (Exception e) {
-			//TODO Saber qual mensagem passar para o usuário
+			e.printStackTrace();
 		}
     }
     
     private void configurarUsuario(Usuario usuario, JSONObject jsonObject) throws JSONException{
     	usuario.setSenha(jsonObject.getString(PARAM_SENHA));
 		usuario.setEmail(jsonObject.getString(PARAM_EMAIL));
+    }
+    
+    private void configurarToken(Token token, Usuario usuario, JSONObject jsonObject) throws JSONException, ServiceException{
+    	token.setUsuario(usuario);
+    	token.setApiKey(jsonObject.getString(PARAM_APIKEY));
     }
 }

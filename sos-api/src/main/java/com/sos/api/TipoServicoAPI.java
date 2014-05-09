@@ -10,6 +10,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.codehaus.jettison.json.JSONException;
@@ -17,6 +18,7 @@ import org.codehaus.jettison.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.sos.api.util.CallBackUtil;
 import com.sos.entities.TipoServico;
 import com.sos.service.business.TipoServicoService;
 import com.sos.service.util.exception.ServiceException;
@@ -36,7 +38,8 @@ public class TipoServicoAPI {
     
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public String pesquisarTiposServicos() {
+    @Consumes(MediaType.TEXT_PLAIN)
+    public String pesquisarTiposServicos(@QueryParam("callback") String callback) {
     	String retorno = BLANK_RETURN;
 		try {
 			List<TipoServico> tiposServicos = tipoServicoService.findAllSortByName();
@@ -51,7 +54,7 @@ public class TipoServicoAPI {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-        return retorno;
+        return CallBackUtil.checarCallback(callback, retorno);
     }
     
     @POST

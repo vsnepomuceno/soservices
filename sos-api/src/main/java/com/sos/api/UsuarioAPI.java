@@ -8,6 +8,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.codehaus.jettison.json.JSONException;
@@ -15,6 +16,7 @@ import org.codehaus.jettison.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.sos.api.util.CallBackUtil;
 import com.sos.entities.Usuario;
 import com.sos.service.business.UsuarioSevice;
 import com.sos.service.util.exception.ServiceException;
@@ -35,7 +37,8 @@ public class UsuarioAPI {
     
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public String getUsuarios() {
+    @Consumes(MediaType.TEXT_PLAIN)
+    public String getUsuarios(@QueryParam("callback") String callback) {
     	String retorno = BLANK_RETURN;
 		try {
 			List<Usuario> usuarios = usuarioService.findAllSortByName();
@@ -50,7 +53,7 @@ public class UsuarioAPI {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-        return retorno;
+        return CallBackUtil.checarCallback(callback, retorno);
     }
     
     @POST

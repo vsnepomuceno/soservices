@@ -1,6 +1,7 @@
 package com.sos.service.business;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.codec.binary.Base64;
@@ -53,6 +54,16 @@ public class TokenGeneratorServiceImpl implements TokenGeneratorService {
 		}
 	}
 
+	@Override
+	@Transactional
+	public void deleteAllByUsuario(Usuario usuario) throws ServiceException {
+		usuario = usuarioRepository.findByEmailAndSenha(usuario.getEmail(), usuario.getSenha());
+		if(usuario != null){
+			List<Token> tokens = tokenGeneratorRepository.findByUsuario(usuario);
+			tokenGeneratorRepository.deleteInBatch(tokens);
+		}
+	}
+	
 	@Override
 	@Transactional
 	public void delete(Token token) throws ServiceException {
