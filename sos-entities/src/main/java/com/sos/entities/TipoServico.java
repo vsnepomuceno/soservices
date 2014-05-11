@@ -1,17 +1,12 @@
 package com.sos.entities;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -30,9 +25,6 @@ public class TipoServico implements Serializable{
 	
 	@Column(name="valorado", nullable=false)
 	private Boolean valorado;
-	
-	@OneToMany(cascade=CascadeType.ALL, mappedBy="tipoServico", fetch=FetchType.LAZY)
-	private Set<Servico> servicos; 
  
 	@Override
 	public String toString() {
@@ -91,12 +83,5 @@ public class TipoServico implements Serializable{
 
 	public Long getId() {
 		return id;
-	}
-
-	public Set<Servico> getServicos() {
-		if(servicos == null){
-			servicos = new HashSet<Servico>();
-		}
-		return servicos;
 	}
 }

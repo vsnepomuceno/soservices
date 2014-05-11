@@ -2,6 +2,7 @@ package com.sos.entities;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -25,8 +27,8 @@ public class Servico implements Serializable {
 	@Column(name="valor")
 	private Double valor;
 	
-	@ManyToOne 
-    @JoinColumn(name="tipo_servico_id", nullable=false)
+	@OneToOne(optional=false, cascade=CascadeType.ALL)
+	@JoinColumn(name="tipo_servico_id")
 	private TipoServico tipoServico;
 	
 	@ManyToOne
