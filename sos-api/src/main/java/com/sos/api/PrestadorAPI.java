@@ -13,6 +13,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -72,7 +74,7 @@ public class PrestadorAPI {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String cadastrarPrestador(String json){
+    public String cadastrarPrestador(@QueryParam("callback") String callback, String json){
     	String retorno = BLANK_RETURN;
     	try {
     		JSONObject jsonObject = new JSONObject(json);
@@ -81,14 +83,13 @@ public class PrestadorAPI {
     		
 			prestadorService.create(prestador);
 		} catch (ServiceException e) {
-			//TODO Mostrar como vai ser mostrado a mensagem de erro para o cliente
-			e.printStackTrace();
+			Response.status(Status.BAD_REQUEST).build();
 		} catch (JSONException e) {
-			e.printStackTrace();
+			Response.status(Status.BAD_REQUEST).build();
 		} catch (Exception e) {
-			e.printStackTrace();
+			Response.status(Status.BAD_REQUEST).build();
 		}
-    	return retorno;
+    	return CallBackUtil.checarCallback(callback, retorno);
     }
     
     @DELETE
