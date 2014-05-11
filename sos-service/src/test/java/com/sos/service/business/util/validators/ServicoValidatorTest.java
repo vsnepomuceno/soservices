@@ -71,7 +71,7 @@ public class ServicoValidatorTest {
 		tipoServico.setValorado(true);
 		servico.setDescricao("Serviço de Encanamento");
 		servico.setTipoServico(tipoServico);
-		servico.setValor(0.0);
+		servico.setValor(10.0);
 		
 		Prestador prestador = new Prestador();
 		carregarCamposUsuario(prestador);
