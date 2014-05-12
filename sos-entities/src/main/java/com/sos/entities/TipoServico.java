@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -26,6 +27,9 @@ public class TipoServico implements Serializable{
 	@Column(name="valorado", nullable=false)
 	private Boolean valorado;
  
+	@OneToOne(mappedBy="tipoServico")
+	private Servico servico;
+	
 	@Override
 	public String toString() {
 		return "TipoServico [id=" + id + ", nome=" + nome + ", valorado=" + valorado + "]";

@@ -10,7 +10,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -24,7 +23,9 @@ import org.springframework.stereotype.Component;
 import com.sos.api.util.CallBackUtil;
 import com.sos.entities.Endereco;
 import com.sos.entities.Prestador;
+import com.sos.entities.TipoServico;
 import com.sos.service.business.PrestadorService;
+import com.sos.service.business.TipoServicoService;
 import com.sos.service.util.exception.ServiceException;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
@@ -35,6 +36,8 @@ public class PrestadorAPI {
 
     @Autowired
     private PrestadorService prestadorService;
+    @Autowired
+    private TipoServicoService tipoServicoService;
 
     private final String BLANK_RETURN = "{}";
     private final String PARAM_NOME = "nome";
@@ -50,10 +53,10 @@ public class PrestadorAPI {
     private final String PARAM_ESTADO = "estado";
     
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.TEXT_PLAIN)
-    public String pesquisarPrestadores(@QueryParam("callback") String callback) {
+    public Response pesquisarPrestadores(@QueryParam("callback") String callback) {
     	String retorno = BLANK_RETURN;
+    	Response response = null;
 		try {
 			List<Prestador> prestadores = prestadorService.findAllSortByName();
 			
@@ -63,59 +66,87 @@ public class PrestadorAPI {
 			xStream.omitField(Set.class, "credenciais");
 			
 			retorno = xStream.toXML(prestadores);
+			response = CallBackUtil.setResponseOK(retorno, MediaType.APPLICATION_JSON, callback);
 		} catch (ServiceException e) {
-			e.printStackTrace();
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
 		} catch (Exception e) {
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
 			e.printStackTrace();
 		}
-        return CallBackUtil.checarCallback(callback, retorno);
+		return response;
+    }
+    
+    @Path("filter")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response pesquisarPrestadoresPorTipoServico(String json, @QueryParam("callback") String callback) {
+    	String retorno = BLANK_RETURN;
+    	Response response = null;
+    	try {
+    		TipoServico tipoServico = tipoServicoService.findByCodigo(configurarFiltroPrestador(new JSONObject(json)));
+    		List<Prestador> prestadores = prestadorService.findByServicosTipoServico(tipoServico);
+    		
+    		XStream xStream = new XStream(new JettisonMappedXmlDriver());
+    		xStream.setMode(XStream.ID_REFERENCES);
+    		xStream.alias("prestadores", Prestador.class);
+    		xStream.omitField(Set.class, "credenciais");
+    		
+    		retorno = xStream.toXML(prestadores);
+    		response = CallBackUtil.setResponseOK(retorno, MediaType.APPLICATION_JSON, callback);
+    	} catch (ServiceException e) {
+    		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
+    	} catch (Exception e) {
+    		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
+    		e.printStackTrace();
+    	}
+    	return response;
     }
     
     @POST
-    @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String cadastrarPrestador(@QueryParam("callback") String callback, String json){
-    	String retorno = BLANK_RETURN;
+    public Response cadastrarPrestador(String json, @QueryParam("callback") String callback){
+    	Response response = null;
     	try {
     		JSONObject jsonObject = new JSONObject(json);
     		Prestador prestador = new Prestador();
     		configurarPrestador(prestador, jsonObject);
     		
 			prestadorService.create(prestador);
+			response = CallBackUtil.setResponseOK("Prestador Criado Com sucesso.", MediaType.APPLICATION_JSON, callback);
 		} catch (ServiceException e) {
-			Response.status(Status.BAD_REQUEST).build();
-		} catch (JSONException e) {
-			Response.status(Status.BAD_REQUEST).build();
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
 		} catch (Exception e) {
-			Response.status(Status.BAD_REQUEST).build();
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
+			e.printStackTrace();
 		}
-    	return CallBackUtil.checarCallback(callback, retorno);
+    	return response;
     }
     
     @DELETE
     @Path("{prestador}")
-    @Consumes(MediaType.TEXT_PLAIN)
-    public void removerPrestador(@PathParam("prestador") Long codigo, @QueryParam("callback") String callback){
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response removerPrestador(@PathParam("prestador") Long codigo, @QueryParam("callback") String callback){
+    	Response response = null;
     	try {
 			Prestador prestador = prestadorService.findByCodigo(codigo);
 			if(prestador != null){
 				prestadorService.delete(prestador);
-			}else{
-				//TODO Saber qual mensagem passar para o usuário
+				response = CallBackUtil.setResponseOK("Prestador Removido com Sucesso", MediaType.APPLICATION_JSON, callback);
 			}
 		} catch (ServiceException e) {
-			//TODO Saber qual mensagem passar para o usuário
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
 		} catch (Exception e) {
-			//TODO Saber qual mensagem passar para o usuário
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
+			e.printStackTrace();
 		}
+    	return response;
     }
     
     @PUT
     @Path("{prestador}")
-    @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String editarPrestador(@PathParam("prestador") Long codigo, String json){
-    	String retorno = BLANK_RETURN;
+    public Response editarPrestador(@PathParam("prestador") Long codigo, String json, @QueryParam("callback") String callback){
+    	Response response = null;
     	try{
     		Prestador prestador = prestadorService.findByCodigo(codigo);
     		if(prestador != null){
@@ -123,15 +154,15 @@ public class PrestadorAPI {
     			configurarPrestador(prestador, jsonObject);
     			
     			prestadorService.update(prestador);
-    		}else{
-    			//TODO Saber qual mensagem passar para o usuário
+    			response = CallBackUtil.setResponseOK("Prestador Editado com Sucesso", MediaType.APPLICATION_JSON, callback);
     		}
     	}catch(ServiceException e){
-    		//TODO Saber qual mensagem passar para o usuário
+    		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
     	}catch (Exception e) {
-    		//TODO Saber qual mensagem passar para o usuário
+    		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
+    		e.printStackTrace();
 		}
-    	return retorno;
+    	return response;
     }
     
     private void configurarPrestador(Prestador prestador, JSONObject jsonObject) throws JSONException{
@@ -149,10 +180,22 @@ public class PrestadorAPI {
 		}
 		endereco.setLogradouro(jsonObject.getString(PARAM_LOGRADOURO));
 		endereco.setNumero(jsonObject.getInt(PARAM_NUMERO));
-		endereco.setComplemento(jsonObject.getString(PARAM_COMPLEMENTO));
+		try{
+			endereco.setComplemento(jsonObject.getString(PARAM_COMPLEMENTO));
+		}catch(JSONException e){
+			endereco.setComplemento(null);
+		}
 		endereco.setCep(jsonObject.getString(PARAM_CEP));
 		endereco.setCidade(jsonObject.getString(PARAM_CIDADE));
 		endereco.setEstado(jsonObject.getString(PARAM_ESTADO));
 		prestador.setEndereco(endereco);
     }
+    
+    private Long configurarFiltroPrestador(JSONObject jsonObject) throws JSONException{
+    	JSONObject jsonFilter = jsonObject.getJSONObject("filter");
+    	Long codigoTipoServico = jsonFilter.getLong("tipo_servico_id");
+    	
+    	return codigoTipoServico;
+    }
 }
+    

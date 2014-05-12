@@ -9,9 +9,10 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -45,10 +46,10 @@ public class ServicoAPI {
     private final String PARAM_ID_PRESTADOR = "id_prestador";
     
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.TEXT_PLAIN)
-    public String pesquisarServicos(@QueryParam("callback") String callback) {
+    public Response pesquisarServicos(@QueryParam("callback") String callback) {
     	String retorno = BLANK_RETURN;
+    	Response response = null;
 		try {
 			List<Servico> servicos = servicoService.findAllSortByDescricao();
 			
@@ -57,59 +58,60 @@ public class ServicoAPI {
 			xStream.alias("servicos", Servico.class);
 			
 			retorno = xStream.toXML(servicos);
+			response = CallBackUtil.setResponseOK(retorno, MediaType.APPLICATION_JSON, callback);
 		} catch (ServiceException e) {
-			e.printStackTrace();
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
 		} catch (Exception e) {
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
 			e.printStackTrace();
 		}
-		return CallBackUtil.checarCallback(callback, retorno);
+		return response;
     }
     
     @POST
-    @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String cadastrarServico(String json){
-    	String retorno = BLANK_RETURN;
+    public Response cadastrarServico(String json, @QueryParam("callback") String callback){
+    	Response response = null;
     	try {
     		JSONObject jsonObject = new JSONObject(json);
-
     		Servico servico = new Servico();
     		configurarServico(servico, jsonObject);
     		
     		servicoService.create(servico);
+    		response = CallBackUtil.setResponseOK("Serviço Criado Com sucesso.", MediaType.APPLICATION_JSON, callback);
 		} catch (ServiceException e) {
-			//TODO Saber qual mensagem passar para o usuário
-		} catch (JSONException e) {
-			//TODO Saber qual mensagem passar para o usuário
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
 		} catch (Exception e) {
-			//TODO Saber qual mensagem passar para o usuário
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
+			e.printStackTrace();
 		}
-    	return retorno;
+    	return response;
     }
     
     @DELETE
     @Path("{servico}")
-    public void removerServico(@PathParam("servico") Long codigo){
+    public Response removerServico(@PathParam("servico") Long codigo, @QueryParam("callback") String callback){
+    	Response response = null;
     	try {
 			Servico servico = servicoService.findByCodigo(codigo);
 			if(servico != null){
 				servicoService.delete(servico);
-			}else{
-				//TODO Saber qual mensagem passar para o usuário
+				response = CallBackUtil.setResponseOK("Serviço Removido com Sucesso", MediaType.APPLICATION_JSON, callback);
 			}
 		} catch (ServiceException e) {
-			//TODO Saber qual mensagem passar para o usuário
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
 		} catch (Exception e) {
-			//TODO Saber qual mensagem passar para o usuário
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
+			e.printStackTrace();
 		}
+    	return response;
     }
     
     @PUT
     @Path("{servico}")
-    @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public String editarServico(@PathParam("servico") Long codigo, String json){
-    	String retorno = BLANK_RETURN;
+    public Response editarServico(@PathParam("servico") Long codigo, String json, @QueryParam("callback") String callback){
+    	Response response = null;
     	try{
     		Servico servico = servicoService.findByCodigo(codigo);
     		if(servico != null){
@@ -117,20 +119,24 @@ public class ServicoAPI {
     			configurarServico(servico, jsonObject);
     			
     			servicoService.update(servico);
-    		}else{
-    			//TODO Saber qual mensagem passar para o usuário
+    			response = CallBackUtil.setResponseOK("Serviço Editado com Sucesso", MediaType.APPLICATION_JSON, callback);
     		}
     	}catch(ServiceException e){
-    		//TODO Saber qual mensagem passar para o usuário
+    		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
     	}catch (Exception e) {
-    		//TODO Saber qual mensagem passar para o usuário
+    		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
+    		e.printStackTrace();
 		}
-    	return retorno;
+    	return response;
     }
     
     private void configurarServico(Servico servico, JSONObject jsonObject) throws JSONException, ServiceException{
     	servico.setDescricao(jsonObject.getString(PARAM_DESCRICAO));
-		servico.setValor(jsonObject.getDouble(PARAM_VALOR));
+		try{
+			servico.setValor(jsonObject.getDouble(PARAM_VALOR));
+		}catch(JSONException e){
+			servico.setValor(null);
+		}
 		servico.setTipoServico(tipoServicoService.findByCodigo(jsonObject.getLong(PARAM_ID_TIPO_SERVICO)));
 		servico.setPrestador(prestadorService.findByCodigo(jsonObject.getLong(PARAM_ID_PRESTADOR)));
     }

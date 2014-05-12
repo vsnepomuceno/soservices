@@ -1,11 +1,17 @@
 package com.sos.api.util;
 
+import javax.ws.rs.core.Response;
+
 public class CallBackUtil {
 
-	public static String checarCallback(String callback, String retorno){
+	public static Response setResponseError(int codigo, String mensagem, String callback){
+		return Response.serverError().status(codigo).entity(mensagem).build();
+	}
+
+	public static Response setResponseOK(String mensagem, String mediaType, String callback){
 		if (callback != null) {
-			retorno = callback + "(" +retorno+ ")";
+			mensagem = callback + "(" +mensagem+ ")";
 		}
-		return retorno;
+		return Response.ok(mensagem, mediaType).build();
 	}
 }

@@ -1,5 +1,6 @@
 package com.sos.service.business;
 
+import java.text.MessageFormat;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import com.sos.entities.TipoServico;
 import com.sos.service.business.util.validators.ResultadoValidacao;
 import com.sos.service.business.util.validators.ServicoValidator;
 import com.sos.service.repository.ServicoRepository;
+import com.sos.service.util.MessageUtil;
 import com.sos.service.util.exception.ServiceException;
 
 @Service
@@ -20,10 +22,17 @@ public class ServicoServiceImpl implements ServicoService {
 	@Autowired
 	ServicoRepository servicoRepository;
 
+	private static final String SERVICO_NAO_ENCONTRADO = "exception.servico_id_nao_encontrado";
+	
 	@Override
 	@Transactional(readOnly=true)
 	public Servico findByCodigo(Long codigo) throws ServiceException {
-		return servicoRepository.findOne(codigo);
+		Servico servico = servicoRepository.findOne(codigo);
+		if(servico == null){
+			String mensagem = MessageUtil.getMessageFromBundle(SERVICO_NAO_ENCONTRADO);
+			throw new ServiceException(MessageFormat.format(mensagem, codigo));
+		}
+		return servico;
 	}
 
 	@Override

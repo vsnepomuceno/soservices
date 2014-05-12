@@ -22,4 +22,18 @@ public class ServiceException extends Exception{
 	public List<String> getMsgs() {
 		return msgs;
 	}
-}
+	
+	@Override
+	public String getMessage() {
+		String retorno = super.getMessage();
+		if(retorno == null){
+			StringBuilder sb = new StringBuilder();
+			for (String mensagem : msgs) {
+				sb.append(mensagem);
+				sb.append(". ");
+			}
+			retorno = sb.toString();
+		}
+		return retorno;
+	}
+}	
