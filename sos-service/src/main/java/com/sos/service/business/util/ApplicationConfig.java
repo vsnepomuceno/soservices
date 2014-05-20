@@ -38,7 +38,7 @@ public class ApplicationConfig {
 
 		ComboPooledDataSource dataSource = new ComboPooledDataSource();
 		try {
-			Class.forName(driver);   
+			Class.forName(driver);
 			dataSource.setDriverClass(driver);
 			dataSource.setJdbcUrl(databaseUrl);
 			dataSource.setUser(databaseUser);

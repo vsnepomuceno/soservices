@@ -37,6 +37,10 @@ public class Prestador extends Usuario implements Serializable{
 	@OneToMany(mappedBy="prestador", fetch=FetchType.LAZY, orphanRemoval=true)
 	private Set<Servico> servicos;
 	
+	public Prestador(){
+		
+	}
+	
 	public String getCpf() {
 		return cpf;
 	}

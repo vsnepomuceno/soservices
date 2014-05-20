@@ -26,6 +26,7 @@ import com.sos.entities.Prestador;
 import com.sos.entities.TipoServico;
 import com.sos.service.business.PrestadorService;
 import com.sos.service.business.TipoServicoService;
+import com.sos.service.business.util.FiltroPrestadores;
 import com.sos.service.util.exception.ServiceException;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
@@ -51,6 +52,12 @@ public class PrestadorAPI {
     private final String PARAM_TELEFONE = "telefone";
     private final String PARAM_CIDADE = "cidade";
     private final String PARAM_ESTADO = "estado";
+
+    private final String PARAM_QUERY = "query";
+    private final String PARAM_DISTANCIA = "distancia";
+    private final String PARAM_LATITUDE = "latitude";
+    private final String PARAM_LONGITUDE = "longitude";
+    private final String PARAM_TIPO_SERVICO_ID = "tipo_servico_id";
     
     @GET
     @Consumes(MediaType.TEXT_PLAIN)
@@ -76,15 +83,14 @@ public class PrestadorAPI {
 		return response;
     }
     
-    @Path("filter")
+    @Path("query")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response pesquisarPrestadoresPorTipoServico(String json, @QueryParam("callback") String callback) {
     	String retorno = BLANK_RETURN;
     	Response response = null;
     	try {
-    		TipoServico tipoServico = tipoServicoService.findByCodigo(configurarFiltroPrestador(new JSONObject(json)));
-    		List<Prestador> prestadores = prestadorService.findByServicosTipoServico(tipoServico);
+    		List<Prestador> prestadores = prestadorService.findByFiltroPrestadores(configurarFiltroPrestadores(new JSONObject(json)));
     		
     		XStream xStream = new XStream(new JettisonMappedXmlDriver());
     		xStream.setMode(XStream.ID_REFERENCES);
@@ -191,11 +197,35 @@ public class PrestadorAPI {
 		prestador.setEndereco(endereco);
     }
     
-    private Long configurarFiltroPrestador(JSONObject jsonObject) throws JSONException{
-    	JSONObject jsonFilter = jsonObject.getJSONObject("filter");
-    	Long codigoTipoServico = jsonFilter.getLong("tipo_servico_id");
+    private FiltroPrestadores configurarFiltroPrestadores(JSONObject jsonObject) throws ServiceException, JSONException{
+    	JSONObject jsonFilter = jsonObject.getJSONObject("query");
     	
-    	return codigoTipoServico;
+    	long codigoTipoServico = 0;
+    	TipoServico tipoServico = null;
+    	try{
+    		codigoTipoServico = jsonFilter.getLong(PARAM_TIPO_SERVICO_ID);
+    		tipoServico = tipoServicoService.findByCodigo(codigoTipoServico); 
+    	}catch(JSONException e){
+    	}
+    	
+    	double distancia = 0.0;
+    	try{
+    		distancia = jsonFilter.getDouble(PARAM_DISTANCIA);
+    	}catch(JSONException e){
+    	}
+    	
+    	double latitude = 0.0;
+    	try{
+    		latitude = jsonFilter.getDouble(PARAM_LATITUDE);
+    	}catch(JSONException e){
+    	}
+    	
+    	double longitude = 0.0;
+    	try{
+    		longitude = jsonFilter.getDouble(PARAM_LONGITUDE);
+    	}catch(JSONException e){
+    	}
+    	
+    	return new FiltroPrestadores(tipoServico, latitude, longitude, distancia);
     }
-}
-    
+}    
