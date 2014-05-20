@@ -1,7 +1,6 @@
 package com.sos.api;
 
 import java.util.List;
-import java.util.Set;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -20,7 +19,10 @@ import org.codehaus.jettison.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sos.api.util.CallBackUtil;
+import com.sos.api.util.PrestadorExclusionStrategy;
 import com.sos.entities.Endereco;
 import com.sos.entities.Prestador;
 import com.sos.entities.TipoServico;
@@ -28,8 +30,6 @@ import com.sos.service.business.PrestadorService;
 import com.sos.service.business.TipoServicoService;
 import com.sos.service.business.util.FiltroPrestadores;
 import com.sos.service.util.exception.ServiceException;
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 
 @Path("prestador")
 @Component
@@ -66,14 +66,9 @@ public class PrestadorAPI {
     	Response response = null;
 		try {
 			List<Prestador> prestadores = prestadorService.findAllSortByName();
-			
-			XStream xStream = new XStream(new JettisonMappedXmlDriver());
-			xStream.setMode(XStream.ID_REFERENCES);
-			xStream.alias("prestadores", Prestador.class);
-			xStream.omitField(Set.class, "credenciais");
-			
-			retorno = xStream.toXML(prestadores);
-			response = CallBackUtil.setResponseOK(retorno, MediaType.APPLICATION_JSON, callback);
+			Gson gson = new GsonBuilder().setExclusionStrategies(new PrestadorExclusionStrategy()).create();
+    		retorno = gson.toJson(prestadores);			
+    		response = CallBackUtil.setResponseOK(retorno, MediaType.APPLICATION_JSON, callback);
 		} catch (ServiceException e) {
 			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
 		} catch (Exception e) {
@@ -92,12 +87,8 @@ public class PrestadorAPI {
     	try {
     		List<Prestador> prestadores = prestadorService.findByFiltroPrestadores(configurarFiltroPrestadores(new JSONObject(json)));
     		
-    		XStream xStream = new XStream(new JettisonMappedXmlDriver());
-    		xStream.setMode(XStream.ID_REFERENCES);
-    		xStream.alias("prestadores", Prestador.class);
-    		xStream.omitField(Set.class, "credenciais");
-    		
-    		retorno = xStream.toXML(prestadores);
+    		Gson gson = new GsonBuilder().setExclusionStrategies(new PrestadorExclusionStrategy()).create();
+    		retorno = gson.toJson(prestadores);
     		response = CallBackUtil.setResponseOK(retorno, MediaType.APPLICATION_JSON, callback);
     	} catch (ServiceException e) {
     		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
@@ -198,7 +189,7 @@ public class PrestadorAPI {
     }
     
     private FiltroPrestadores configurarFiltroPrestadores(JSONObject jsonObject) throws ServiceException, JSONException{
-    	JSONObject jsonFilter = jsonObject.getJSONObject("query");
+    	JSONObject jsonFilter = jsonObject.getJSONObject(PARAM_QUERY);
     	
     	long codigoTipoServico = 0;
     	TipoServico tipoServico = null;
@@ -212,6 +203,7 @@ public class PrestadorAPI {
     	try{
     		distancia = jsonFilter.getDouble(PARAM_DISTANCIA);
     	}catch(JSONException e){
+    		
     	}
     	
     	double latitude = 0.0;

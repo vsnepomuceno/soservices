@@ -13,13 +13,14 @@ import org.codehaus.jettison.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.sos.api.util.TokenExclusionStrategy;
 import com.sos.entities.Token;
 import com.sos.entities.Usuario;
 import com.sos.service.business.TokenGeneratorService;
 import com.sos.service.business.UsuarioSevice;
 import com.sos.service.util.exception.ServiceException;
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 
 @Path("token")
 @Component
@@ -48,12 +49,8 @@ public class TokenGeneratorAPI {
     			configurarUsuario(usuario, jsonObject);
     			Token token = tokenGeneratorService.create(usuario);
     			if(token != null){
-    				XStream xStream = new XStream(new JettisonMappedXmlDriver());
-    				xStream.setMode(XStream.ID_REFERENCES);
-    				xStream.alias("token", Token.class);
-    				xStream.omitField(Usuario.class, "usuario");
-    				
-    				retorno = xStream.toXML(token);
+    				Gson gson = new GsonBuilder().setExclusionStrategies(new TokenExclusionStrategy()).create();
+    	    		retorno = gson.toJson(token);
     			}else{
     				//TODO Saber qual mensagem passar para o usuário
     			}

@@ -19,14 +19,15 @@ import org.codehaus.jettison.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sos.api.util.CallBackUtil;
+import com.sos.api.util.ServicoExclusionStrategy;
 import com.sos.entities.Servico;
 import com.sos.service.business.PrestadorService;
 import com.sos.service.business.ServicoService;
 import com.sos.service.business.TipoServicoService;
 import com.sos.service.util.exception.ServiceException;
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 
 @Path("servico")
 @Component
@@ -53,11 +54,8 @@ public class ServicoAPI {
 		try {
 			List<Servico> servicos = servicoService.findAllSortByDescricao();
 			
-			XStream xStream = new XStream(new JettisonMappedXmlDriver());
-			xStream.setMode(XStream.ID_REFERENCES);
-			xStream.alias("servicos", Servico.class);
-			
-			retorno = xStream.toXML(servicos);
+			Gson gson = new GsonBuilder().setExclusionStrategies(new ServicoExclusionStrategy()).create();
+    		retorno = gson.toJson(servicos);			
 			response = CallBackUtil.setResponseOK(retorno, MediaType.APPLICATION_JSON, callback);
 		} catch (ServiceException e) {
 			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
