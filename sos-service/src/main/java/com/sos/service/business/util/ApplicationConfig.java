@@ -38,11 +38,18 @@ public class ApplicationConfig {
 
 		ComboPooledDataSource dataSource = new ComboPooledDataSource();
 		try {
+			//Connect Configuration
 			Class.forName(driver);
 			dataSource.setDriverClass(driver);
 			dataSource.setJdbcUrl(databaseUrl);
 			dataSource.setUser(databaseUser);
 			dataSource.setPassword(databasePassword);
+
+			//Test Configuration
+			dataSource.setIdleConnectionTestPeriod(300);
+			dataSource.setPreferredTestQuery("SELECT 1;");
+			dataSource.setTestConnectionOnCheckout(true);
+			dataSource.setMaxIdleTime(1800);
 		} catch (PropertyVetoException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -54,7 +61,7 @@ public class ApplicationConfig {
 		HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
 		vendorAdapter.setDatabase(Database.MYSQL);
 		vendorAdapter.setGenerateDdl(true);
-		vendorAdapter.setShowSql(true);
+		vendorAdapter.setShowSql(false);
 		
 		HibernateJpaDialect jpaDialect = new HibernateJpaDialect();
 		
