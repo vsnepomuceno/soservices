@@ -101,7 +101,7 @@ public class PrestadorAPI {
     
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response cadastrarPrestador(String json, @QueryParam("callback") String callback){
+    public Response cadastrarPrestador(@QueryParam("callback") String callback, String json){
     	Response response = null;
     	try {
     		JSONObject jsonObject = new JSONObject(json);
