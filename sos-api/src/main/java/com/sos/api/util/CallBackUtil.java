@@ -1,7 +1,6 @@
 package com.sos.api.util;
 
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 
 public class CallBackUtil {
 
@@ -14,12 +13,5 @@ public class CallBackUtil {
 			mensagem = callback + "(" +mensagem+ ")";
 		}
 		return Response.ok(mensagem, mediaType).build();	
-	}
-	
-	public static Response setResponseOK(String mensagem, String mediaType, String callback, String requestHearders){
-		if (callback != null) {
-			mensagem = callback + "(" +mensagem+ ")";
-		}
-		return makeCORS(Response.ok(mensagem, mediaType), requestHearders);
 	}
 }
