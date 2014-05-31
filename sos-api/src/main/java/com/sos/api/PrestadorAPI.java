@@ -5,6 +5,7 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -81,7 +82,8 @@ public class PrestadorAPI {
     @Path("query")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response pesquisarPrestadoresPorTipoServico(String json, @QueryParam("callback") String callback) {
+    public Response pesquisarPrestadoresPorTipoServico(@HeaderParam("Access-Control-Request-Headers") String requestHeaders, 
+    		String json, @QueryParam("callback") String callback) {
     	String retorno = BLANK_RETURN;
     	Response response = null;
     	try {
@@ -89,7 +91,7 @@ public class PrestadorAPI {
     		
     		Gson gson = new GsonBuilder().setExclusionStrategies(new PrestadorExclusionStrategy()).create();
     		retorno = gson.toJson(prestadores);
-    		response = CallBackUtil.setResponseOK(retorno, MediaType.APPLICATION_JSON, callback);
+    		response = CallBackUtil.setResponseOK(retorno, MediaType.APPLICATION_JSON, callback, requestHeaders);
     	} catch (ServiceException e) {
     		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
     	} catch (Exception e) {
@@ -101,7 +103,7 @@ public class PrestadorAPI {
     
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response cadastrarPrestador(@QueryParam("callback") String callback, String json){
+    public Response cadastrarPrestador(String json, @QueryParam("callback") String callback){
     	Response response = null;
     	try {
     		JSONObject jsonObject = new JSONObject(json);

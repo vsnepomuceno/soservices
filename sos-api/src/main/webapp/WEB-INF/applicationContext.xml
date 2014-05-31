@@ -15,9 +15,9 @@
 	<bean class="com.sos.api.UsuarioAPI" scope="request" />
 	<bean class="com.sos.api.PrestadorAPI" scope="request" />
 	
-	<bean id="dbDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
-    	<property name="jndiName" value="java:comp/env/jdbc/cb_sos-api"/>
-	</bean>
+<!-- 	<bean id="dbDataSource" class="org.springframework.jndi.JndiObjectFactoryBean"> -->
+<!--     	<property name="jndiName" value="java:comp/env/jdbc/cb_sos-api"/> -->
+<!-- 	</bean> -->
 	
 	<context:annotation-config />
 	<context:component-scan base-package="com.sos.service" />
