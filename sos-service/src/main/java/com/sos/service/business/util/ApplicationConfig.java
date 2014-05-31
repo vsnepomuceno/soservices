@@ -23,7 +23,7 @@ import com.sos.entities.TipoServico;
 
 @Configuration
 @Import(PropertyPlaceholderConfig.class)
-@ComponentScan({"com.sos.service.repository", "com.sos.service.business" })
+@ComponentScan({"com.sos.service.repository", "com.sos.service.business", "com.sos.api.filer" })
 @EnableJpaRepositories("com.sos.service.repository")
 @EnableTransactionManagement
 public class ApplicationConfig {

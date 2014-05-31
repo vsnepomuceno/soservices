@@ -3,6 +3,8 @@ package com.sos.api;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.spring.scope.RequestContextFilter;
 
+import com.sos.api.filer.SimpleCORSFilter;
+
 public class MyApplication extends ResourceConfig {
 
     /**
@@ -16,5 +18,6 @@ public class MyApplication extends ResourceConfig {
         register(TipoServicoAPI.class);
         register(TokenGeneratorAPI.class);
         register(UsuarioAPI.class);
+        register(SimpleCORSFilter.class);
     }
 }
