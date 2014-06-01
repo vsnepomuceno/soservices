@@ -6,7 +6,10 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.sos.api.util.CallBackUtil;
 import com.sos.api.util.TokenExclusionStrategy;
 import com.sos.entities.Token;
 import com.sos.entities.Usuario;
@@ -34,7 +38,7 @@ public class TokenGeneratorAPI {
     private final String BLANK_RETURN = "{}";
     private final String PARAM_SENHA = "senha";
     private final String PARAM_EMAIL = "email";
-    private final String PARAM_APIKEY = "apikey";
+    private final String PARAM_APIKEY = "apiKey";
    
     @POST
     @Path("{token}")
@@ -66,10 +70,10 @@ public class TokenGeneratorAPI {
     }
     
     @DELETE
-    @Path("/{logout}/{token}")
-    public void removerToken(@PathParam("logout") String logout, @PathParam("token") Long codigo, String json){
+    @Path("/{logout}/{email}")
+    public void removerToken(@PathParam("logout") String logout, @PathParam("email") String email, String json){
     	try {
-    		Usuario usuario = usuarioSevice.findByCodigo(codigo);
+    		Usuario usuario = usuarioSevice.findByEmail(email);
 			if(usuario != null){
 				JSONObject jsonObject = new JSONObject(json);
 
@@ -77,7 +81,7 @@ public class TokenGeneratorAPI {
 					Token token = new Token();
 					configurarToken(token, usuario, jsonObject);
 					
-					Token tokenPesquisado = tokenGeneratorService.findByApiKeyAndUsuarioId(token.getApiKey(), codigo);
+					Token tokenPesquisado = tokenGeneratorService.findByApiKeyAndUsuarioId(token.getApiKey(), usuario.getId());
 					if(tokenPesquisado != null){
 						tokenGeneratorService.delete(tokenPesquisado);
 					}
@@ -102,5 +106,36 @@ public class TokenGeneratorAPI {
     private void configurarToken(Token token, Usuario usuario, JSONObject jsonObject) throws JSONException, ServiceException{
     	token.setUsuario(usuario);
     	token.setApiKey(jsonObject.getString(PARAM_APIKEY));
+    }
+    
+    @POST
+    @Path("login")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response realizarLogin(String json, @QueryParam("callback") String callback){
+    	String retorno = BLANK_RETURN;
+    	Response response = null;
+    	try{
+			Usuario usuario = new Usuario();
+			JSONObject jsonObject = new JSONObject(json);
+			configurarUsuario(usuario, jsonObject);
+			Token token = tokenGeneratorService.create(usuario);
+			if (token != null) {
+				Gson gson = new GsonBuilder().setExclusionStrategies(
+						new TokenExclusionStrategy()).create();
+				retorno = gson.toJson(token);
+				response = CallBackUtil.setResponseOK(retorno,
+						MediaType.APPLICATION_JSON, callback);
+			} else {
+				response = CallBackUtil.setResponseError(
+						Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+						"Token não gerado!", callback);
+			}   					
+    	}catch(ServiceException e){
+    		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
+    	}catch (Exception e) {
+    		response = CallBackUtil.setResponseError(Status.INTERNAL_SERVER_ERROR.getStatusCode(), e.getMessage(), callback);
+		}
+    	return response;
     }
 }
