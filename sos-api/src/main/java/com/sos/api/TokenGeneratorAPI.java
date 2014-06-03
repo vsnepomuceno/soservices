@@ -6,7 +6,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -24,6 +23,7 @@ import com.sos.entities.Token;
 import com.sos.entities.Usuario;
 import com.sos.service.business.TokenGeneratorService;
 import com.sos.service.business.UsuarioSevice;
+import com.sos.service.util.MessageUtil;
 import com.sos.service.util.exception.ServiceException;
 
 @Path("token")
@@ -112,29 +112,24 @@ public class TokenGeneratorAPI {
     @Path("login")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response realizarLogin(String json, @QueryParam("callback") String callback){
+    public Response realizarLogin(String json){
     	String retorno = BLANK_RETURN;
     	Response response = null;
     	try{
 			Usuario usuario = new Usuario();
-			JSONObject jsonObject = new JSONObject(json);
-			configurarUsuario(usuario, jsonObject);
+			configurarUsuario(usuario, new JSONObject(json));
 			Token token = tokenGeneratorService.create(usuario);
 			if (token != null) {
-				Gson gson = new GsonBuilder().setExclusionStrategies(
-						new TokenExclusionStrategy()).create();
+				Gson gson = new GsonBuilder().setExclusionStrategies(new TokenExclusionStrategy()).create();
 				retorno = gson.toJson(token);
-				response = CallBackUtil.setResponseOK(retorno,
-						MediaType.APPLICATION_JSON, callback);
+				response = CallBackUtil.setResponseOK(retorno, MediaType.APPLICATION_JSON);
 			} else {
-				response = CallBackUtil.setResponseError(
-						Status.INTERNAL_SERVER_ERROR.getStatusCode(),
-						"Token não gerado!", callback);
+				response = CallBackUtil.setResponseError(Status.INTERNAL_SERVER_ERROR.getStatusCode(), MessageUtil.getMessageFromBundle("exception.token_nao_encontrado"));
 			}   					
     	}catch(ServiceException e){
-    		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
+    		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
     	}catch (Exception e) {
-    		response = CallBackUtil.setResponseError(Status.INTERNAL_SERVER_ERROR.getStatusCode(), e.getMessage(), callback);
+    		response = CallBackUtil.setResponseError(Status.INTERNAL_SERVER_ERROR.getStatusCode(), e.getMessage());
 		}
     	return response;
     }

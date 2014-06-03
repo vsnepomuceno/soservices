@@ -3,7 +3,6 @@ package com.sos.api;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -32,7 +31,7 @@ public class UsuarioAPI {
 	
 	@POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response cadastrarPrestador(String json, @QueryParam("callback") String callback){
+    public Response cadastrarPrestador(String json){
     	Response response = null;
     	try {
     		JSONObject jsonObject = new JSONObject(json);
@@ -40,11 +39,11 @@ public class UsuarioAPI {
     		configurarUsuario(usuario, jsonObject);
     		
     		usuarioService.create(usuario);
-			response = CallBackUtil.setResponseOK("Usuario Criado Com sucesso.", MediaType.APPLICATION_JSON, callback);
+			response = CallBackUtil.setResponseOK("Usuario Criado Com sucesso.", MediaType.APPLICATION_JSON);
 		} catch (ServiceException e) {
-			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
 		} catch (Exception e) {
-			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
 			e.printStackTrace();
 		}
     	return response;

@@ -54,47 +54,42 @@ public class PrestadorAPI {
     private final String PARAM_CIDADE = "cidade";
     private final String PARAM_ESTADO = "estado";
 
-    private final String PARAM_QUERY = "query";
-    private final String PARAM_DISTANCIA = "distancia";
-    private final String PARAM_LATITUDE = "latitude";
-    private final String PARAM_LONGITUDE = "longitude";
-    private final String PARAM_TIPO_SERVICO_ID = "tipo_servico_id";
-    
     @GET
     @Consumes(MediaType.TEXT_PLAIN)
-    public Response pesquisarPrestadores(@QueryParam("callback") String callback) {
+    public Response pesquisarPrestadores() {
     	String retorno = BLANK_RETURN;
     	Response response = null;
 		try {
 			List<Prestador> prestadores = prestadorService.findAllSortByName();
 			Gson gson = new GsonBuilder().setExclusionStrategies(new PrestadorExclusionStrategy()).create();
     		retorno = gson.toJson(prestadores);			
-    		response = CallBackUtil.setResponseOK(retorno, MediaType.APPLICATION_JSON, callback);
+    		response = CallBackUtil.setResponseOK(retorno, MediaType.APPLICATION_JSON);
 		} catch (ServiceException e) {
-			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
 		} catch (Exception e) {
-			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
 			e.printStackTrace();
 		}
 		return response;
     }
     
     @Path("query")
-    @POST
+    @GET
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response pesquisarPrestadoresPorTipoServico(String json, @QueryParam("callback") String callback) {
+    public Response pesquisarPrestadoresPorTipoServico(@QueryParam("tipo_servico_id") String tipoServicoId, 
+    		@QueryParam("longitude") String longitude, @QueryParam("latitude") String latitude, @QueryParam("distancia") String distancia) {
     	String retorno = BLANK_RETURN;
     	Response response = null;
     	try {
-    		List<Prestador> prestadores = prestadorService.findByFiltroPrestadores(configurarFiltroPrestadores(new JSONObject(json)));
+    		List<Prestador> prestadores = prestadorService.findByFiltroPrestadores(configurarFiltroPrestadores(tipoServicoId, latitude, longitude, distancia));
     		
     		Gson gson = new GsonBuilder().setExclusionStrategies(new PrestadorExclusionStrategy()).create();
     		retorno = gson.toJson(prestadores);
-    		response = CallBackUtil.setResponseOK(retorno, MediaType.APPLICATION_JSON, callback);
+    		response = CallBackUtil.setResponseOK(retorno, MediaType.APPLICATION_JSON);
     	} catch (ServiceException e) {
-    		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
+    		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
     	} catch (Exception e) {
-    		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
+    		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
     		e.printStackTrace();
     	}
     	return response;
@@ -103,13 +98,13 @@ public class PrestadorAPI {
     @Path("query")
     @OPTIONS
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response verificarPrestadoresPorTipoServico(String json, @QueryParam("callback") String callback) {
+    public Response verificarPrestadoresPorTipoServico(String json) {
     	String retorno = BLANK_RETURN;
     	Response response = null;
     	try {
-    		response = CallBackUtil.setResponseOK(retorno, MediaType.APPLICATION_JSON, callback);
+    		response = CallBackUtil.setResponseOK(retorno, MediaType.APPLICATION_JSON);
     	} catch (Exception e) {
-    		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
+    		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
     		e.printStackTrace();
     	}
     	return response;
@@ -117,7 +112,7 @@ public class PrestadorAPI {
     
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response cadastrarPrestador(String json, @QueryParam("callback") String callback){
+    public Response cadastrarPrestador(String json){
     	Response response = null;
     	try {
     		JSONObject jsonObject = new JSONObject(json);
@@ -125,11 +120,11 @@ public class PrestadorAPI {
     		configurarPrestador(prestador, jsonObject);
     		
 			prestadorService.create(prestador);
-			response = CallBackUtil.setResponseOK("Prestador Criado Com sucesso.", MediaType.APPLICATION_JSON, callback);
+			response = CallBackUtil.setResponseOK("Prestador Criado Com sucesso.", MediaType.APPLICATION_JSON);
 		} catch (ServiceException e) {
-			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
 		} catch (Exception e) {
-			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
 			e.printStackTrace();
 		}
     	return response;
@@ -138,18 +133,18 @@ public class PrestadorAPI {
     @DELETE
     @Path("{prestador}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response removerPrestador(@PathParam("prestador") Long codigo, @QueryParam("callback") String callback){
+    public Response removerPrestador(@PathParam("prestador") Long codigo){
     	Response response = null;
     	try {
 			Prestador prestador = prestadorService.findByCodigo(codigo);
 			if(prestador != null){
 				prestadorService.delete(prestador);
-				response = CallBackUtil.setResponseOK("Prestador Removido com Sucesso", MediaType.APPLICATION_JSON, callback);
+				response = CallBackUtil.setResponseOK("Prestador Removido com Sucesso", MediaType.APPLICATION_JSON);
 			}
 		} catch (ServiceException e) {
-			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
 		} catch (Exception e) {
-			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
 			e.printStackTrace();
 		}
     	return response;
@@ -158,7 +153,7 @@ public class PrestadorAPI {
     @PUT
     @Path("{prestador}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response editarPrestador(@PathParam("prestador") Long codigo, String json, @QueryParam("callback") String callback){
+    public Response editarPrestador(@PathParam("prestador") Long codigo, String json){
     	Response response = null;
     	try{
     		Prestador prestador = prestadorService.findByCodigo(codigo);
@@ -167,12 +162,12 @@ public class PrestadorAPI {
     			configurarPrestador(prestador, jsonObject);
     			
     			prestadorService.update(prestador);
-    			response = CallBackUtil.setResponseOK("Prestador Editado com Sucesso", MediaType.APPLICATION_JSON, callback);
+    			response = CallBackUtil.setResponseOK("Prestador Editado com Sucesso", MediaType.APPLICATION_JSON);
     		}
     	}catch(ServiceException e){
-    		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
+    		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
     	}catch (Exception e) {
-    		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
+    		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
     		e.printStackTrace();
 		}
     	return response;
@@ -204,36 +199,32 @@ public class PrestadorAPI {
 		prestador.setEndereco(endereco);
     }
     
-    private FiltroPrestadores configurarFiltroPrestadores(JSONObject jsonObject) throws ServiceException, JSONException{
-    	JSONObject jsonFilter = jsonObject.getJSONObject(PARAM_QUERY);
-    	
+    private FiltroPrestadores configurarFiltroPrestadores(String tipoServicoId, String strLongitude, String strLatitude, String strDistancia) throws ServiceException{
     	long codigoTipoServico = 0;
     	TipoServico tipoServico = null;
     	try{
-    		codigoTipoServico = jsonFilter.getLong(PARAM_TIPO_SERVICO_ID);
+    		codigoTipoServico = Long.valueOf(tipoServicoId);
     		tipoServico = tipoServicoService.findByCodigo(codigoTipoServico); 
-    	}catch(JSONException e){
+    	}catch(NumberFormatException e){
     	}
     	
     	double distancia = 0.0;
     	try{
-    		distancia = jsonFilter.getDouble(PARAM_DISTANCIA);
-    	}catch(JSONException e){
-    		
+    		distancia = Double.valueOf(strDistancia);
+    	}catch(NumberFormatException e){
     	}
     	
     	double latitude = 0.0;
     	try{
-    		latitude = jsonFilter.getDouble(PARAM_LATITUDE);
-    	}catch(JSONException e){
+    		latitude = Double.valueOf(strLatitude);
+    	}catch(NumberFormatException e){
     	}
     	
     	double longitude = 0.0;
     	try{
-    		longitude = jsonFilter.getDouble(PARAM_LONGITUDE);
-    	}catch(JSONException e){
+    		longitude = Double.valueOf(strLongitude);
+    	}catch(NumberFormatException e){
     	}
-    	
     	return new FiltroPrestadores(tipoServico, latitude, longitude, distancia);
     }
 }    

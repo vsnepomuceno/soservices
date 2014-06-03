@@ -9,7 +9,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -40,7 +39,7 @@ public class TipoServicoAPI {
     
     @GET
     @Consumes(MediaType.TEXT_PLAIN)
-    public Response pesquisarTiposServicos(@QueryParam("callback") String callback) {
+    public Response pesquisarTiposServicos() {
     	String retorno = BLANK_RETURN;
     	Response response = null;
 		try {
@@ -48,11 +47,11 @@ public class TipoServicoAPI {
 
 			Gson gson = new GsonBuilder().setExclusionStrategies(new TipoServicoExclusionStrategy()).create();
     		retorno = gson.toJson(tiposServicos);
-			response = CallBackUtil.setResponseOK(retorno, MediaType.APPLICATION_JSON, callback);
+			response = CallBackUtil.setResponseOK(retorno, MediaType.APPLICATION_JSON);
 		} catch (ServiceException e) {
-			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
 		} catch (Exception e) {
-			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
 			e.printStackTrace();
 		}
         return response;
@@ -60,7 +59,7 @@ public class TipoServicoAPI {
     
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response cadastrarTipoServico(String json, @QueryParam("callback") String callback){
+    public Response cadastrarTipoServico(String json){
     	Response response = null;
     	try {
     		JSONObject jsonObject = new JSONObject(json);
@@ -68,11 +67,11 @@ public class TipoServicoAPI {
     		configurarTipoServico(tipoServico, jsonObject);
     		
 			tipoServicoService.create(tipoServico);
-			response = CallBackUtil.setResponseOK("Tipo de Serviço Criado Com sucesso.", MediaType.APPLICATION_JSON, callback);
+			response = CallBackUtil.setResponseOK("Tipo de Serviço Criado Com sucesso.", MediaType.APPLICATION_JSON);
 		} catch (ServiceException e) {
-			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
 		} catch (Exception e) {
-			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
 			e.printStackTrace();
 		}
     	return response;
@@ -80,18 +79,18 @@ public class TipoServicoAPI {
     
     @DELETE
     @Path("{tipo-servico}")
-    public Response removerTipoServico(@PathParam("tipo-servico") Long codigo, @QueryParam("callback") String callback){
+    public Response removerTipoServico(@PathParam("tipo-servico") Long codigo){
     	Response response = null;
     	try {
 			TipoServico tipoServico = tipoServicoService.findByCodigo(codigo);
 			if(tipoServico != null){
 				tipoServicoService.delete(tipoServico);
-				response = CallBackUtil.setResponseOK("Tipo de Serviço Removido com Sucesso", MediaType.APPLICATION_JSON, callback);
+				response = CallBackUtil.setResponseOK("Tipo de Serviço Removido com Sucesso", MediaType.APPLICATION_JSON);
 			}
 		} catch (ServiceException e) {
-			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
 		} catch (Exception e) {
-			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
 			e.printStackTrace();
 		}
     	return response;
@@ -100,7 +99,7 @@ public class TipoServicoAPI {
     @PUT
     @Path("{tipo-servico}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response editarTipoServico(@PathParam("tipo-servico") Long codigo, String json, @QueryParam("callback") String callback){
+    public Response editarTipoServico(@PathParam("tipo-servico") Long codigo, String json){
     	Response response = null;
     	try{
     		TipoServico tipoServico = tipoServicoService.findByCodigo(codigo);
@@ -109,12 +108,12 @@ public class TipoServicoAPI {
     			configurarTipoServico(tipoServico, jsonObject);
     			
     			tipoServicoService.update(tipoServico);
-    			response = CallBackUtil.setResponseOK("Tipo de Serviço Editado com Sucesso", MediaType.APPLICATION_JSON, callback);
+    			response = CallBackUtil.setResponseOK("Tipo de Serviço Editado com Sucesso", MediaType.APPLICATION_JSON);
     		}
     	}catch(ServiceException e){
-    		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
+    		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
     	}catch (Exception e) {
-    		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage(), callback);
+    		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
     		e.printStackTrace();
 		}
     	return response;
