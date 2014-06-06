@@ -11,6 +11,7 @@ import com.sos.entities.TipoServico;
 
 public interface PrestadorRepository extends JpaRepository<Prestador, Long>{
 	Prestador findByCpf(final String cpf);
+	Prestador findByEmail(final String email);
 	List<Prestador> findByServicosTipoServico(final TipoServico tipoServico);
 	List<Prestador> findAll(Specification<T> spec);
 }

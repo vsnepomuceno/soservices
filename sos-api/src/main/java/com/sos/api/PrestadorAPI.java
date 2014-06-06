@@ -29,6 +29,7 @@ import com.sos.entities.Prestador;
 import com.sos.entities.TipoServico;
 import com.sos.service.business.PrestadorService;
 import com.sos.service.business.TipoServicoService;
+import com.sos.service.business.UsuarioSevice;
 import com.sos.service.business.util.FiltroPrestadores;
 import com.sos.service.util.exception.ServiceException;
 
@@ -40,6 +41,8 @@ public class PrestadorAPI {
     private PrestadorService prestadorService;
     @Autowired
     private TipoServicoService tipoServicoService;
+    @Autowired
+    private UsuarioSevice usuarioService;
 
     private final String BLANK_RETURN = "{}";
     private final String PARAM_NOME = "nome";
@@ -94,6 +97,27 @@ public class PrestadorAPI {
     	}
     	return response;
     }
+    
+    @GET
+    @Path("email")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response pesquisarPrestadorPorEmail(@QueryParam("email") String email) {
+    	String retorno = BLANK_RETURN;
+    	Response response = null;
+		try {			
+			Prestador prestador = prestadorService.findByEmail(email);
+			Gson gson = new GsonBuilder().setExclusionStrategies(new PrestadorExclusionStrategy()).create();
+    		retorno = gson.toJson(prestador);			
+    		response = CallBackUtil.setResponseOK(retorno, MediaType.APPLICATION_JSON);
+		} catch (ServiceException e) {
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
+		} catch (Exception e) {
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
+			e.printStackTrace();
+		}
+		return response;
+    }
+    
     
     @Path("query")
     @OPTIONS
@@ -151,14 +175,15 @@ public class PrestadorAPI {
     }
     
     @PUT
-    @Path("{prestador}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response editarPrestador(@PathParam("prestador") Long codigo, String json){
+    public Response editarPrestador( String json){
     	Response response = null;
     	try{
-    		Prestador prestador = prestadorService.findByCodigo(codigo);
+    		JSONObject jsonObject = new JSONObject(json);
+    		String email = jsonObject.getString(PARAM_EMAIL);
+    		
+    		Prestador prestador = prestadorService.findByEmail(email);
     		if(prestador != null){
-    			JSONObject jsonObject = new JSONObject(json);
     			configurarPrestador(prestador, jsonObject);
     			
     			prestadorService.update(prestador);
@@ -174,9 +199,10 @@ public class PrestadorAPI {
     }
     
     private void configurarPrestador(Prestador prestador, JSONObject jsonObject) throws JSONException{
-    	prestador.setNome(jsonObject.getString(PARAM_NOME));
-		prestador.setEmail(jsonObject.getString(PARAM_EMAIL));
-		prestador.setSenha(jsonObject.getString(PARAM_SENHA));
+    	// Não atualizar dados do usuário apenas do prestador 
+    	//prestador.setNome(jsonObject.getString(PARAM_NOME));
+		//prestador.setEmail(jsonObject.getString(PARAM_EMAIL));
+		//prestador.setSenha(jsonObject.getString(PARAM_SENHA));
 		prestador.setCpf(jsonObject.getString(PARAM_CPF));
 		prestador.setTelefone(jsonObject.getString(PARAM_TELEFONE));
 
@@ -227,4 +253,43 @@ public class PrestadorAPI {
     	}
     	return new FiltroPrestadores(tipoServico, latitude, longitude, distancia);
     }
+    
+    @POST
+    @Path("usuario")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response cadastrarUsuarioPrestador(String json){
+    	Response response = null;
+    	try {
+    		JSONObject jsonObject = new JSONObject(json);
+    		Prestador usuario = new Prestador();
+    		configurarUsuarioPrestador(usuario, jsonObject);
+    		
+    		prestadorService.create(usuario);
+			response = CallBackUtil.setResponseOK("Usuario Criado Com sucesso.", MediaType.APPLICATION_JSON);
+		} catch (ServiceException e) {
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
+		} catch (Exception e) {
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
+			e.printStackTrace();
+		}
+    	return response;
+    }
+	
+	private void configurarUsuarioPrestador(Prestador usuario, JSONObject jsonObject) throws JSONException{
+		usuario.setNome(jsonObject.getString(PARAM_NOME));
+		usuario.setEmail(jsonObject.getString(PARAM_EMAIL));
+		usuario.setSenha(jsonObject.getString(PARAM_SENHA));
+		
+		
+		usuario.setCpf(jsonObject.getString(PARAM_EMAIL));
+		usuario.setTelefone("00000000");
+		Endereco endereco = new Endereco();		
+		endereco.setLogradouro("default");
+		endereco.setNumero(0);
+		endereco.setComplemento("default");
+		endereco.setCep("default");
+		endereco.setCidade("default");
+		endereco.setEstado("default");
+		usuario.setEndereco(endereco);
+	}
 }    

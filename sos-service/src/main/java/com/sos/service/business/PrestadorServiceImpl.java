@@ -111,14 +111,14 @@ public class PrestadorServiceImpl implements PrestadorService {
 		ResultadoValidacao resultadoValidacao = PrestadorValidator.validarCamposPrestador(prestador);
 
 		if (resultadoValidacao.isValido()) {
-			String cpf = prestador.getCpf();
-			Prestador prestadorPesquisado = prestadorRepository.findByCpf(cpf);
+			String email = prestador.getEmail();
+			Prestador prestadorPesquisado = prestadorRepository.findByEmail(email);
 
 			if (prestadorPesquisado == null || prestadorPesquisado.getId().equals(prestador.getId())) {
 				salvarPrestador(prestador);
 			} else {
 				String mensagem = MessageUtil.getMessageFromBundle(PRESTADOR_CPF_EXISTENTE);
-				throw new ServiceException(MessageFormat.format(mensagem, cpf));
+				throw new ServiceException(MessageFormat.format(mensagem, email));
 			}
 		} else {
 			throw new ServiceException(resultadoValidacao.getMsgs());
@@ -140,5 +140,10 @@ public class PrestadorServiceImpl implements PrestadorService {
 	private void salvarPrestador(Prestador prestador){
 		googleMapsService.configurarLatLongEndereco(prestador.getEndereco());
 		prestadorRepository.save(prestador);
+	}
+
+	@Override
+	public Prestador findByEmail(String email) throws ServiceException {
+		return prestadorRepository.findByEmail(email);
 	}
 }
