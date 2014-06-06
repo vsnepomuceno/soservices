@@ -42,8 +42,8 @@ public class ServicoAPI {
     private final String BLANK_RETURN = "{}";
     private final String PARAM_VALOR = "valor";
     private final String PARAM_DESCRICAO = "descricao";
-    private final String PARAM_ID_TIPO_SERVICO = "id_tipo_servico";
-    private final String PARAM_ID_PRESTADOR = "id_prestador";
+    private final String PARAM_NOME_TIPO_SERVICO = "nome_tipo_servico";
+    private final String PARAM_EMAIL_PRESTADOR = "usuario_email";
     
     @GET
     @Consumes(MediaType.TEXT_PLAIN)
@@ -130,11 +130,11 @@ public class ServicoAPI {
     private void configurarServico(Servico servico, JSONObject jsonObject) throws JSONException, ServiceException{
     	servico.setDescricao(jsonObject.getString(PARAM_DESCRICAO));
 		try{
-			servico.setValor(jsonObject.getDouble(PARAM_VALOR));
+			servico.setValor(Double.parseDouble(jsonObject.getString(PARAM_VALOR)));
 		}catch(JSONException e){
 			servico.setValor(null);
 		}
-		servico.setTipoServico(tipoServicoService.findByCodigo(jsonObject.getLong(PARAM_ID_TIPO_SERVICO)));
-		servico.setPrestador(prestadorService.findByCodigo(jsonObject.getLong(PARAM_ID_PRESTADOR)));
+		servico.setTipoServico(tipoServicoService.findByNome(jsonObject.getString(PARAM_NOME_TIPO_SERVICO)));
+		servico.setPrestador(prestadorService.findByEmail(jsonObject.getString(PARAM_EMAIL_PRESTADOR)));
     }
 }
