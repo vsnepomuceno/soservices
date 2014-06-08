@@ -176,7 +176,7 @@ public class PrestadorAPI {
     
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response editarPrestador( String json){
+    public Response editarPrestador(String json){
     	Response response = null;
     	try{
     		JSONObject jsonObject = new JSONObject(json);
@@ -199,10 +199,6 @@ public class PrestadorAPI {
     }
     
     private void configurarPrestador(Prestador prestador, JSONObject jsonObject) throws JSONException{
-    	// Não atualizar dados do usuário apenas do prestador 
-    	//prestador.setNome(jsonObject.getString(PARAM_NOME));
-		//prestador.setEmail(jsonObject.getString(PARAM_EMAIL));
-		//prestador.setSenha(jsonObject.getString(PARAM_SENHA));
 		prestador.setCpf(jsonObject.getString(PARAM_CPF));
 		prestador.setTelefone(jsonObject.getString(PARAM_TELEFONE));
 
@@ -279,7 +275,6 @@ public class PrestadorAPI {
 		usuario.setNome(jsonObject.getString(PARAM_NOME));
 		usuario.setEmail(jsonObject.getString(PARAM_EMAIL));
 		usuario.setSenha(jsonObject.getString(PARAM_SENHA));
-		
 		
 		usuario.setCpf(jsonObject.getString(PARAM_EMAIL));
 		usuario.setTelefone("00000000");
