@@ -66,6 +66,12 @@ public class ServicoServiceImpl implements ServicoService {
 	public List<Servico> findByValor(double valor) {
 		return servicoRepository.findByValor(valor);
 	}
+	
+	@Override
+	@Transactional(readOnly=true)
+	public List<Servico> findByPrestadorEmail(String email) {
+		return servicoRepository.findByPrestadorEmail(email);
+	}
 
 	@Override
 	@Transactional

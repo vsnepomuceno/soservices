@@ -13,6 +13,7 @@ public interface ServicoService{
 	List<Servico> findByDescricao(final String descricao);
 	List<Servico> findByTipoServico(final TipoServico tipoServico);
 	List<Servico> findByValor(double valor);
+	List<Servico> findByPrestadorEmail(String email);
 	
 	void create(final Servico servico) throws ServiceException;
 	void update(final Servico servico) throws ServiceException;

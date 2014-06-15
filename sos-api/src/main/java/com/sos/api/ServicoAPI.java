@@ -9,6 +9,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -58,6 +59,25 @@ public class ServicoAPI {
 			response = CallBackUtil.setResponseOK(retorno, MediaType.APPLICATION_JSON);
 		} catch (ServiceException e) {
 			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
+		} catch (Exception e) {
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
+			e.printStackTrace();
+		}
+		return response;
+    }
+    
+    @GET
+    @Path("email")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response pesquisarServicosPorPrestador(@QueryParam("email") String email) {
+    	String retorno = BLANK_RETURN;
+    	Response response = null;
+		try {
+			List<Servico> servicos = servicoService.findByPrestadorEmail(email);
+			
+			Gson gson = new GsonBuilder().setExclusionStrategies(new ServicoExclusionStrategy()).create();
+    		retorno = gson.toJson(servicos);			
+			response = CallBackUtil.setResponseOK(retorno, MediaType.APPLICATION_JSON);
 		} catch (Exception e) {
 			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
 			e.printStackTrace();

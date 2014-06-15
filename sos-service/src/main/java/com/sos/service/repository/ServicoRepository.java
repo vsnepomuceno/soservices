@@ -11,4 +11,5 @@ public interface ServicoRepository extends JpaRepository<Servico, Long>{
 	List<Servico> findByDescricao(final String descricao);
 	List<Servico> findByTipoServico(final TipoServico tipoServico);
 	List<Servico> findByValor(double valor);
+	List<Servico> findByPrestadorEmail(String email);
 }
