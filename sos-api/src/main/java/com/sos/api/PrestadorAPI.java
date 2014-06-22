@@ -10,7 +10,6 @@ import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -170,16 +169,16 @@ public class PrestadorAPI {
     }
     
     @DELETE
-    @Path("{prestador}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response removerPrestador(@PathParam("prestador") Long codigo, @HeaderParam("token-api") String tokenApi){
+    public Response removerPrestador(@QueryParam("email") String email, @HeaderParam("token-api") String tokenApi){
     	Response response = null;
     	try {
-			Prestador prestador = prestadorService.findByCodigo(codigo);
+			Prestador prestador = prestadorService.findByEmail(email);
 			if(prestador != null){
 				
 				Token token = tokenGeneratorService.findByApiKeyAndUsuarioId(tokenApi, prestador.getId());
 				if(token != null){
+					tokenGeneratorService.delete(token);
 					prestadorService.delete(prestador);
 					response = CallBackUtil.setResponseOK("Prestador Removido com Sucesso", MediaType.APPLICATION_JSON);
 				}else{
