@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.sos.entities.Prestador;
-import com.sos.service.business.util.FiltroPrestadores;
+import com.sos.service.business.util.FiltroServicos;
 import com.sos.service.util.MessageUtil;
 
 public class PrestadorValidator extends UsuarioValidator{
@@ -18,7 +18,7 @@ public class PrestadorValidator extends UsuarioValidator{
 	private static final String PRESTADOR_CPF_OBRIGATORIO = "exception.prestador_cpf_obrigatorio";
 	private static final String PRESTRADOR_TELEFONE_OBRIGATORIO = "exception.prestador_telefone_obrigatorio";
 	
-	public static ResultadoValidacao validarFiltroPrestador(FiltroPrestadores filtro){
+	public static ResultadoValidacao validarFiltroPrestador(FiltroServicos filtro){
 		List<String> msgs = new ArrayList<String>();
 		boolean valido = false;
 		if(filtro != null){
@@ -68,7 +68,7 @@ public class PrestadorValidator extends UsuarioValidator{
 		return valido;
 	}
 	
-	private static boolean validarTipoServico(FiltroPrestadores filtro, List<String> msgs){
+	private static boolean validarTipoServico(FiltroServicos filtro, List<String> msgs){
 		boolean valido = true;
 		if(filtro.getTIpoServico() == null){
 			valido = false;
@@ -77,7 +77,7 @@ public class PrestadorValidator extends UsuarioValidator{
 		return valido;
 	}
 	
-	private static boolean validarLatitudeLongitude(FiltroPrestadores filtro, List<String> msgs){
+	private static boolean validarLatitudeLongitude(FiltroServicos filtro, List<String> msgs){
 		boolean valido = true;
 		if(filtro.getLatitude() == 0.0 || filtro.getLongitude() == 0.0){
 			valido = false;
@@ -86,7 +86,7 @@ public class PrestadorValidator extends UsuarioValidator{
 		return valido;
 	}
 	
-	private static boolean validarDistancia(FiltroPrestadores filtro, List<String> msgs){
+	private static boolean validarDistancia(FiltroServicos filtro, List<String> msgs){
 		boolean valido = true;
 		if(filtro.getDistancia() <= 0){
 			valido = false;

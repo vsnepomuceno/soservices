@@ -5,6 +5,7 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -22,11 +23,17 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sos.api.util.CallBackUtil;
+import com.sos.api.util.PrestadorExclusionStrategy;
 import com.sos.api.util.ServicoExclusionStrategy;
+import com.sos.entities.Prestador;
 import com.sos.entities.Servico;
+import com.sos.entities.TipoServico;
+import com.sos.entities.Token;
 import com.sos.service.business.PrestadorService;
 import com.sos.service.business.ServicoService;
 import com.sos.service.business.TipoServicoService;
+import com.sos.service.business.TokenGeneratorService;
+import com.sos.service.business.util.FiltroServicos;
 import com.sos.service.util.exception.ServiceException;
 
 @Path("servico")
@@ -39,6 +46,8 @@ public class ServicoAPI {
     private TipoServicoService tipoServicoService;
     @Autowired
     private PrestadorService  prestadorService;
+    @Autowired
+    private TokenGeneratorService tokenGeneratorService;
 
     private final String BLANK_RETURN = "{}";
     private final String PARAM_VALOR = "valor";
@@ -85,17 +94,48 @@ public class ServicoAPI {
 		return response;
     }
     
+    @Path("query")
+    @GET
+    @Consumes(MediaType.APPLICATION_JSON)
+    //TODO 
+    public Response pesquisarPrestadoresPorTipoServico(@QueryParam("tipo_servico_id") String tipoServicoId, 
+    		@QueryParam("longitude") String longitude, @QueryParam("latitude") String latitude, @QueryParam("distancia") String distancia) {
+    	String retorno = BLANK_RETURN;
+    	Response response = null;
+    	try {
+    		List<Prestador> prestadores = prestadorService.findByFiltroPrestadores(configurarFiltroServicos(tipoServicoId, latitude, longitude, distancia));
+    		
+    		Gson gson = new GsonBuilder().setExclusionStrategies(new PrestadorExclusionStrategy()).create();
+    		retorno = gson.toJson(prestadores);
+    		response = CallBackUtil.setResponseOK(retorno, MediaType.APPLICATION_JSON);
+    	} catch (ServiceException e) {
+    		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
+    	} catch (Exception e) {
+    		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
+    		e.printStackTrace();
+    	}
+    	return response;
+    }
+    
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response cadastrarServico(String json){
+    public Response cadastrarServico(String json, @HeaderParam("token-api") String tokenApi){
     	Response response = null;
     	try {
     		JSONObject jsonObject = new JSONObject(json);
     		Servico servico = new Servico();
     		configurarServico(servico, jsonObject);
     		
-    		servicoService.create(servico);
-    		response = CallBackUtil.setResponseOK("Serviço Criado Com sucesso.", MediaType.APPLICATION_JSON);
+    		Token token = tokenGeneratorService.findByApiKeyAndUsuarioId(tokenApi, servico.getPrestador().getId());
+    		
+    		if(token != null){
+    			servicoService.create(servico);
+    			response = CallBackUtil.setResponseOK("Serviço Criado Com sucesso.", MediaType.APPLICATION_JSON);
+    		}else{
+    			response = CallBackUtil.setResponseError(Status.UNAUTHORIZED.getStatusCode(), 
+    					"Você não tem permissão para cadastrar este serviço.");
+    		}
+    		
 		} catch (ServiceException e) {
 			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
 		} catch (Exception e) {
@@ -107,13 +147,23 @@ public class ServicoAPI {
     
     @DELETE
     @Path("{servico}")
-    public Response removerServico(@PathParam("servico") Long codigo){
+    public Response removerServico(@PathParam("servico") Long codigo, @HeaderParam("token-api") String tokenApi){
     	Response response = null;
     	try {
 			Servico servico = servicoService.findByCodigo(codigo);
 			if(servico != null){
-				servicoService.delete(servico);
-				response = CallBackUtil.setResponseOK("Serviço Removido com Sucesso", MediaType.APPLICATION_JSON);
+				
+				Token token = tokenGeneratorService.findByApiKeyAndUsuarioId(tokenApi, servico.getPrestador().getId());
+				
+				if(token != null){
+					servicoService.delete(servico);
+					response = CallBackUtil.setResponseOK("Serviço Removido com Sucesso", MediaType.APPLICATION_JSON);
+				}else{
+					response = CallBackUtil.setResponseError(Status.UNAUTHORIZED.getStatusCode(), 
+							"Você não tem permissão para remover este serviço.");
+				}
+			}else{
+				response = CallBackUtil.setResponseError(Status.UNAUTHORIZED.getStatusCode(), "Serviço não encontrado.");
 			}
 		} catch (ServiceException e) {
 			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
@@ -127,16 +177,25 @@ public class ServicoAPI {
     @PUT
     @Path("{servico}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response editarServico(@PathParam("servico") Long codigo, String json){
+    public Response editarServico(@PathParam("servico") Long codigo, String json, @HeaderParam("token-api") String tokenApi){
     	Response response = null;
     	try{
     		Servico servico = servicoService.findByCodigo(codigo);
     		if(servico != null){
-    			JSONObject jsonObject = new JSONObject(json);
-    			configurarServico(servico, jsonObject);
-    			
-    			servicoService.update(servico);
-    			response = CallBackUtil.setResponseOK("Serviço Editado com Sucesso", MediaType.APPLICATION_JSON);
+    			Token token = tokenGeneratorService.findByApiKeyAndUsuarioId(tokenApi, servico.getPrestador().getId());
+				
+				if(token != null){
+					JSONObject jsonObject = new JSONObject(json);
+					configurarServico(servico, jsonObject);
+					
+					servicoService.update(servico);
+					response = CallBackUtil.setResponseOK("Serviço Editado com Sucesso", MediaType.APPLICATION_JSON);
+				}else{
+					response = CallBackUtil.setResponseError(Status.UNAUTHORIZED.getStatusCode(), 
+							"Você não tem permissão para editar este serviço.");
+				}
+    		}else{
+    			response = CallBackUtil.setResponseError(Status.UNAUTHORIZED.getStatusCode(), "Serviço não encontrado.");
     		}
     	}catch(ServiceException e){
     		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
@@ -156,5 +215,34 @@ public class ServicoAPI {
 		}
 		servico.setTipoServico(tipoServicoService.findByNome(jsonObject.getString(PARAM_NOME_TIPO_SERVICO)));
 		servico.setPrestador(prestadorService.findByEmail(jsonObject.getString(PARAM_EMAIL_PRESTADOR)));
+    }
+    
+    private FiltroServicos configurarFiltroServicos(String tipoServicoId, String strLongitude, String strLatitude, String strDistancia) throws ServiceException{
+    	long codigoTipoServico = 0;
+    	TipoServico tipoServico = null;
+    	try{
+    		codigoTipoServico = Long.valueOf(tipoServicoId);
+    		tipoServico = tipoServicoService.findByCodigo(codigoTipoServico); 
+    	}catch(NumberFormatException e){
+    	}
+    	
+    	double distancia = 0.0;
+    	try{
+    		distancia = Double.valueOf(strDistancia);
+    	}catch(NumberFormatException e){
+    	}
+    	
+    	double latitude = 0.0;
+    	try{
+    		latitude = Double.valueOf(strLatitude);
+    	}catch(NumberFormatException e){
+    	}
+    	
+    	double longitude = 0.0;
+    	try{
+    		longitude = Double.valueOf(strLongitude);
+    	}catch(NumberFormatException e){
+    	}
+    	return new FiltroServicos(tipoServico, latitude, longitude, distancia);
     }
 }

@@ -2,14 +2,14 @@ package com.sos.service.business.util;
 
 import com.sos.entities.TipoServico;
 
-public class FiltroPrestadores {
+public class FiltroServicos {
 
 	private TipoServico tipoServico;
 	private double latitude;
 	private double longitude;
 	private double distancia;
 	
-	public FiltroPrestadores(TipoServico tipoServico, double latitude, double longitude, double distancia) {
+	public FiltroServicos(TipoServico tipoServico, double latitude, double longitude, double distancia) {
 		this.tipoServico = tipoServico;
 		this.latitude = latitude;
 		this.longitude = longitude;

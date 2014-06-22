@@ -5,6 +5,7 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -24,13 +25,16 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sos.api.util.CallBackUtil;
 import com.sos.api.util.PrestadorExclusionStrategy;
+import com.sos.api.util.TokenExclusionStrategy;
 import com.sos.entities.Endereco;
 import com.sos.entities.Prestador;
 import com.sos.entities.TipoServico;
+import com.sos.entities.Token;
 import com.sos.service.business.PrestadorService;
 import com.sos.service.business.TipoServicoService;
+import com.sos.service.business.TokenGeneratorService;
 import com.sos.service.business.UsuarioSevice;
-import com.sos.service.business.util.FiltroPrestadores;
+import com.sos.service.business.util.FiltroServicos;
 import com.sos.service.util.exception.ServiceException;
 
 @Path("prestador")
@@ -43,6 +47,8 @@ public class PrestadorAPI {
     private TipoServicoService tipoServicoService;
     @Autowired
     private UsuarioSevice usuarioService;
+    @Autowired
+    private TokenGeneratorService tokenGeneratorService;
 
     private final String BLANK_RETURN = "{}";
     private final String PARAM_NOME = "nome";
@@ -138,13 +144,46 @@ public class PrestadorAPI {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response cadastrarPrestador(String json){
     	Response response = null;
+    	String retorno = BLANK_RETURN;
     	try {
     		JSONObject jsonObject = new JSONObject(json);
     		Prestador prestador = new Prestador();
     		configurarPrestador(prestador, jsonObject);
+
+    		prestadorService.create(prestador);
+			
+    		Token token = tokenGeneratorService.create(prestador);
+    		Gson gson = new GsonBuilder().setExclusionStrategies(new TokenExclusionStrategy()).create();
+			retorno = gson.toJson(token);
+			
+			response = CallBackUtil.setResponseOK(retorno, MediaType.APPLICATION_JSON);
+		} catch (ServiceException e) {
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
+		} catch (Exception e) {
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
+			e.printStackTrace();
+		}
+    	return response;
+    }
+    
+    @POST
+    @Path("usuario")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response cadastrarUsuarioPrestador(String json){
+    	Response response = null;
+    	String retorno = BLANK_RETURN;
+    	try {
+    		JSONObject jsonObject = new JSONObject(json);
+    		Prestador usuario = new Prestador();
+    		configurarUsuarioPrestador(usuario, jsonObject);
     		
-			prestadorService.create(prestador);
-			response = CallBackUtil.setResponseOK("Prestador Criado Com sucesso.", MediaType.APPLICATION_JSON);
+    		prestadorService.create(usuario);
+    		
+    		Token token = tokenGeneratorService.create(usuario);
+    		Gson gson = new GsonBuilder().setExclusionStrategies(new TokenExclusionStrategy()).create();
+			retorno = gson.toJson(token);
+			
+			response = CallBackUtil.setResponseOK(retorno, MediaType.APPLICATION_JSON);
 		} catch (ServiceException e) {
 			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
 		} catch (Exception e) {
@@ -157,13 +196,22 @@ public class PrestadorAPI {
     @DELETE
     @Path("{prestador}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response removerPrestador(@PathParam("prestador") Long codigo){
+    public Response removerPrestador(@PathParam("prestador") Long codigo, @HeaderParam("token-api") String tokenApi){
     	Response response = null;
     	try {
 			Prestador prestador = prestadorService.findByCodigo(codigo);
 			if(prestador != null){
-				prestadorService.delete(prestador);
-				response = CallBackUtil.setResponseOK("Prestador Removido com Sucesso", MediaType.APPLICATION_JSON);
+				
+				Token token = tokenGeneratorService.findByApiKeyAndUsuarioId(tokenApi, prestador.getId());
+				if(token != null){
+					prestadorService.delete(prestador);
+					response = CallBackUtil.setResponseOK("Prestador Removido com Sucesso", MediaType.APPLICATION_JSON);
+				}else{
+					response = CallBackUtil.setResponseError(Status.UNAUTHORIZED.getStatusCode(), 
+							"Você não tem permissão para remover prestador de serviço.");
+				}
+			}else{
+				response = CallBackUtil.setResponseError(Status.UNAUTHORIZED.getStatusCode(), "Prestador não encontrado.");
 			}
 		} catch (ServiceException e) {
 			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
@@ -176,7 +224,7 @@ public class PrestadorAPI {
     
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response editarPrestador(String json){
+    public Response editarPrestador(String json, @HeaderParam("token-api") String tokenApi){
     	Response response = null;
     	try{
     		JSONObject jsonObject = new JSONObject(json);
@@ -186,8 +234,16 @@ public class PrestadorAPI {
     		if(prestador != null){
     			configurarPrestador(prestador, jsonObject);
     			
-    			prestadorService.update(prestador);
-    			response = CallBackUtil.setResponseOK("Prestador Editado com Sucesso", MediaType.APPLICATION_JSON);
+    			Token token = tokenGeneratorService.findByApiKeyAndUsuarioId(tokenApi, prestador.getId());
+				if(token != null){
+					prestadorService.update(prestador);
+					response = CallBackUtil.setResponseOK("Prestador Editado com Sucesso", MediaType.APPLICATION_JSON);
+				}else{
+					response = CallBackUtil.setResponseError(Status.UNAUTHORIZED.getStatusCode(), 
+							"Você não tem permissão para editar prestador de serviço.");
+				}
+    		}else{
+    			response = CallBackUtil.setResponseError(Status.UNAUTHORIZED.getStatusCode(), "Prestador não encontrado.");
     		}
     	}catch(ServiceException e){
     		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
@@ -221,7 +277,7 @@ public class PrestadorAPI {
 		prestador.setEndereco(endereco);
     }
     
-    private FiltroPrestadores configurarFiltroPrestadores(String tipoServicoId, String strLongitude, String strLatitude, String strDistancia) throws ServiceException{
+    private FiltroServicos configurarFiltroPrestadores(String tipoServicoId, String strLongitude, String strLatitude, String strDistancia) throws ServiceException{
     	long codigoTipoServico = 0;
     	TipoServico tipoServico = null;
     	try{
@@ -247,30 +303,9 @@ public class PrestadorAPI {
     		longitude = Double.valueOf(strLongitude);
     	}catch(NumberFormatException e){
     	}
-    	return new FiltroPrestadores(tipoServico, latitude, longitude, distancia);
+    	return new FiltroServicos(tipoServico, latitude, longitude, distancia);
     }
     
-    @POST
-    @Path("usuario")
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response cadastrarUsuarioPrestador(String json){
-    	Response response = null;
-    	try {
-    		JSONObject jsonObject = new JSONObject(json);
-    		Prestador usuario = new Prestador();
-    		configurarUsuarioPrestador(usuario, jsonObject);
-    		
-    		prestadorService.create(usuario);
-			response = CallBackUtil.setResponseOK("Usuario Criado Com sucesso.", MediaType.APPLICATION_JSON);
-		} catch (ServiceException e) {
-			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
-		} catch (Exception e) {
-			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
-			e.printStackTrace();
-		}
-    	return response;
-    }
-	
 	private void configurarUsuarioPrestador(Prestador usuario, JSONObject jsonObject) throws JSONException{
 		usuario.setNome(jsonObject.getString(PARAM_NOME));
 		usuario.setEmail(jsonObject.getString(PARAM_EMAIL));

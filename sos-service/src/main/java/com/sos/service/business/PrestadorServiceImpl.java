@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.sos.entities.Prestador;
 import com.sos.entities.TipoServico;
 import com.sos.service.business.util.DistanciaUtil;
-import com.sos.service.business.util.FiltroPrestadores;
+import com.sos.service.business.util.FiltroServicos;
 import com.sos.service.business.util.validators.PrestadorValidator;
 import com.sos.service.business.util.validators.ResultadoValidacao;
 import com.sos.service.repository.PrestadorRepository;
@@ -44,7 +44,7 @@ public class PrestadorServiceImpl implements PrestadorService {
 	
 	@Override
 	@Transactional(readOnly=true)
-	public List<Prestador> findByFiltroPrestadores(FiltroPrestadores filtro) throws ServiceException {
+	public List<Prestador> findByFiltroPrestadores(FiltroServicos filtro) throws ServiceException {
 		List<Prestador> prestadores = null;
 		List<Prestador> prestadoresFiltrados = null;
 		ResultadoValidacao resultadoValidacao = PrestadorValidator.validarFiltroPrestador(filtro);
