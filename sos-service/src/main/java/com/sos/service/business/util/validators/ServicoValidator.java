@@ -55,10 +55,7 @@ public class ServicoValidator {
 					msgs.add(MessageUtil.getMessageFromBundle(SERVICO_VALOR_NAO_POSITIVO));
 				}
 			}else{
-				if(servico.getValor() != null){
-					valido = false;
-					msgs.add(MessageUtil.getMessageFromBundle(SERVICO_TIPO_SERVICO_NAO_VALORADO));
-				}
+				servico.setValor(null);
 			}
 		}else{
 			valido = false;
