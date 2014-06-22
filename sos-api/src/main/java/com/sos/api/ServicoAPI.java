@@ -23,9 +23,7 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sos.api.util.CallBackUtil;
-import com.sos.api.util.PrestadorExclusionStrategy;
 import com.sos.api.util.ServicoExclusionStrategy;
-import com.sos.entities.Prestador;
 import com.sos.entities.Servico;
 import com.sos.entities.TipoServico;
 import com.sos.entities.Token;
@@ -97,16 +95,16 @@ public class ServicoAPI {
     @Path("query")
     @GET
     @Consumes(MediaType.APPLICATION_JSON)
-    //TODO 
-    public Response pesquisarPrestadoresPorTipoServico(@QueryParam("tipo_servico_id") String tipoServicoId, 
+    public Response pesquisarServicosPorTipoServico(@QueryParam("tipo_servico_id") String tipoServicoId, 
     		@QueryParam("longitude") String longitude, @QueryParam("latitude") String latitude, @QueryParam("distancia") String distancia) {
     	String retorno = BLANK_RETURN;
     	Response response = null;
     	try {
-    		List<Prestador> prestadores = prestadorService.findByFiltroPrestadores(configurarFiltroServicos(tipoServicoId, latitude, longitude, distancia));
+    		List<Servico> servicos = 
+    				servicoService.findByFiltroServico(configurarFiltroServicos(tipoServicoId, latitude, longitude, distancia));
     		
-    		Gson gson = new GsonBuilder().setExclusionStrategies(new PrestadorExclusionStrategy()).create();
-    		retorno = gson.toJson(prestadores);
+    		Gson gson = new GsonBuilder().setExclusionStrategies(new ServicoExclusionStrategy()).create();
+    		retorno = gson.toJson(servicos);
     		response = CallBackUtil.setResponseOK(retorno, MediaType.APPLICATION_JSON);
     	} catch (ServiceException e) {
     		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());

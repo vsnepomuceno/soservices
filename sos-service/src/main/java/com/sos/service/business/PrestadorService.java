@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.sos.entities.Prestador;
 import com.sos.entities.TipoServico;
-import com.sos.service.business.util.FiltroServicos;
 import com.sos.service.util.exception.ServiceException;
 
 public interface PrestadorService {
@@ -15,6 +14,5 @@ public interface PrestadorService {
 	void delete(final Prestador prestador) throws ServiceException;
 	Prestador findByCPF(final String cpf) throws ServiceException;
 	List<Prestador> findByServicosTipoServico(final TipoServico tipoServico) throws ServiceException;
-	List<Prestador> findByFiltroPrestadores(final FiltroServicos filtro) throws ServiceException;
 	Prestador findByEmail(final String email) throws ServiceException;
 }

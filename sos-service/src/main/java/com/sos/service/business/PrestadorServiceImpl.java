@@ -1,7 +1,6 @@
 package com.sos.service.business;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,8 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sos.entities.Prestador;
 import com.sos.entities.TipoServico;
-import com.sos.service.business.util.DistanciaUtil;
-import com.sos.service.business.util.FiltroServicos;
 import com.sos.service.business.util.validators.PrestadorValidator;
 import com.sos.service.business.util.validators.ResultadoValidacao;
 import com.sos.service.repository.PrestadorRepository;
@@ -40,26 +37,6 @@ public class PrestadorServiceImpl implements PrestadorService {
 			throw new ServiceException(MessageUtil.getMessageFromBundle(PRESTADOR_NAO_ENCONTRADO));
 		}
 		return prestador;
-	}
-	
-	@Override
-	@Transactional(readOnly=true)
-	public List<Prestador> findByFiltroPrestadores(FiltroServicos filtro) throws ServiceException {
-		List<Prestador> prestadores = null;
-		List<Prestador> prestadoresFiltrados = null;
-		ResultadoValidacao resultadoValidacao = PrestadorValidator.validarFiltroPrestador(filtro);
-		if(resultadoValidacao.isValido()){
-			prestadores = prestadorRepository.findByServicosTipoServico(filtro.getTIpoServico());
-			prestadoresFiltrados = new ArrayList<Prestador>();
-			for (Prestador prestador : prestadores) {
-				if(DistanciaUtil.verificarPertenceRaioDistancia(prestador, filtro.getDistancia(), filtro.getLatitude(), filtro.getLongitude())){
-					prestadoresFiltrados.add(prestador);
-				}
-			}
-		}else{
-			throw new ServiceException(resultadoValidacao.getMsgs());
-		}
-		return prestadoresFiltrados;
 	}
 	
 	@Override

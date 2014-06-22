@@ -28,13 +28,11 @@ import com.sos.api.util.PrestadorExclusionStrategy;
 import com.sos.api.util.TokenExclusionStrategy;
 import com.sos.entities.Endereco;
 import com.sos.entities.Prestador;
-import com.sos.entities.TipoServico;
 import com.sos.entities.Token;
 import com.sos.service.business.PrestadorService;
 import com.sos.service.business.TipoServicoService;
 import com.sos.service.business.TokenGeneratorService;
 import com.sos.service.business.UsuarioSevice;
-import com.sos.service.business.util.FiltroServicos;
 import com.sos.service.util.exception.ServiceException;
 
 @Path("prestador")
@@ -80,28 +78,6 @@ public class PrestadorAPI {
 			e.printStackTrace();
 		}
 		return response;
-    }
-    
-    @Path("query")
-    @GET
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response pesquisarPrestadoresPorTipoServico(@QueryParam("tipo_servico_id") String tipoServicoId, 
-    		@QueryParam("longitude") String longitude, @QueryParam("latitude") String latitude, @QueryParam("distancia") String distancia) {
-    	String retorno = BLANK_RETURN;
-    	Response response = null;
-    	try {
-    		List<Prestador> prestadores = prestadorService.findByFiltroPrestadores(configurarFiltroPrestadores(tipoServicoId, latitude, longitude, distancia));
-    		
-    		Gson gson = new GsonBuilder().setExclusionStrategies(new PrestadorExclusionStrategy()).create();
-    		retorno = gson.toJson(prestadores);
-    		response = CallBackUtil.setResponseOK(retorno, MediaType.APPLICATION_JSON);
-    	} catch (ServiceException e) {
-    		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
-    	} catch (Exception e) {
-    		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
-    		e.printStackTrace();
-    	}
-    	return response;
     }
     
     @GET
@@ -275,35 +251,6 @@ public class PrestadorAPI {
 		endereco.setCidade(jsonObject.getString(PARAM_CIDADE));
 		endereco.setEstado(jsonObject.getString(PARAM_ESTADO));
 		prestador.setEndereco(endereco);
-    }
-    
-    private FiltroServicos configurarFiltroPrestadores(String tipoServicoId, String strLongitude, String strLatitude, String strDistancia) throws ServiceException{
-    	long codigoTipoServico = 0;
-    	TipoServico tipoServico = null;
-    	try{
-    		codigoTipoServico = Long.valueOf(tipoServicoId);
-    		tipoServico = tipoServicoService.findByCodigo(codigoTipoServico); 
-    	}catch(NumberFormatException e){
-    	}
-    	
-    	double distancia = 0.0;
-    	try{
-    		distancia = Double.valueOf(strDistancia);
-    	}catch(NumberFormatException e){
-    	}
-    	
-    	double latitude = 0.0;
-    	try{
-    		latitude = Double.valueOf(strLatitude);
-    	}catch(NumberFormatException e){
-    	}
-    	
-    	double longitude = 0.0;
-    	try{
-    		longitude = Double.valueOf(strLongitude);
-    	}catch(NumberFormatException e){
-    	}
-    	return new FiltroServicos(tipoServico, latitude, longitude, distancia);
     }
     
 	private void configurarUsuarioPrestador(Prestador usuario, JSONObject jsonObject) throws JSONException{
