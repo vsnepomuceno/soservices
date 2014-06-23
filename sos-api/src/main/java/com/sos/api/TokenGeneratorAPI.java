@@ -133,4 +133,26 @@ public class TokenGeneratorAPI {
 		}
     	return response;
     }
+    
+    @POST
+    @Path("login/facebook")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response realizarLoginFacebook(String json){
+    	String retorno = BLANK_RETURN;
+    	Response response = null;
+    	try{
+			Usuario usuario = new Usuario();
+			configurarUsuarioFacebook(usuario, new JSONObject(json));
+			response = CallBackUtil.setResponseOK(json, MediaType.APPLICATION_JSON);
+			   					
+    	}catch (Exception e) {
+    		response = CallBackUtil.setResponseError(Status.INTERNAL_SERVER_ERROR.getStatusCode(), e.getMessage());
+		}
+    	return response;
+    }
+    
+    private void configurarUsuarioFacebook(Usuario usuario, JSONObject jsonObject) throws JSONException{
+    	usuario.setEmail(jsonObject.getString(PARAM_EMAIL));
+    }
 }
