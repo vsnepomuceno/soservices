@@ -33,7 +33,7 @@ public class Usuario implements Serializable{
 	@Column(name="email", nullable=false, length=50, unique=true)
 	private String email;
 	
-	@Column(name="senha", nullable=false, length=20)
+	@Column(name="senha", nullable=true, length=200)
 	private String senha;
 	
 	@OneToMany(mappedBy="usuario", fetch=FetchType.LAZY, orphanRemoval=true)

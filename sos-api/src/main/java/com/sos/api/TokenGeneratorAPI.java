@@ -98,34 +98,16 @@ public class TokenGeneratorAPI {
 		}
     }
     
-    private void configurarUsuario(Usuario usuario, JSONObject jsonObject) throws JSONException{
-    	usuario.setSenha(jsonObject.getString(PARAM_SENHA));
-		usuario.setEmail(jsonObject.getString(PARAM_EMAIL));
-    }
-    
-    private void configurarToken(Token token, Usuario usuario, JSONObject jsonObject) throws JSONException, ServiceException{
-    	token.setUsuario(usuario);
-    	token.setApiKey(jsonObject.getString(PARAM_APIKEY));
-    }
-    
     @POST
     @Path("login")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response realizarLogin(String json){
-    	String retorno = BLANK_RETURN;
     	Response response = null;
     	try{
 			Usuario usuario = new Usuario();
 			configurarUsuario(usuario, new JSONObject(json));
-			Token token = tokenGeneratorService.create(usuario);
-			if (token != null) {
-				Gson gson = new GsonBuilder().setExclusionStrategies(new TokenExclusionStrategy()).create();
-				retorno = gson.toJson(token);
-				response = CallBackUtil.setResponseOK(retorno, MediaType.APPLICATION_JSON);
-			} else {
-				response = CallBackUtil.setResponseError(Status.INTERNAL_SERVER_ERROR.getStatusCode(), MessageUtil.getMessageFromBundle("exception.token_nao_encontrado"));
-			}   					
+			response = configurarResponse(usuario);
     	}catch(ServiceException e){
     		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
     	}catch (Exception e) {
@@ -139,20 +121,42 @@ public class TokenGeneratorAPI {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public Response realizarLoginFacebook(String json){
-    	String retorno = BLANK_RETURN;
     	Response response = null;
     	try{
 			Usuario usuario = new Usuario();
-			configurarUsuarioFacebook(usuario, new JSONObject(json));
-			response = CallBackUtil.setResponseOK(json, MediaType.APPLICATION_JSON);
-			   					
+			configurarUsuario(usuario, new JSONObject(json));
+			Usuario usuarioPesquisado = usuarioSevice.findByEmail(usuario.getEmail());
+			if(usuarioPesquisado == null){
+				usuarioSevice.create(usuario);
+			}
+			response = configurarResponse(usuario);
     	}catch (Exception e) {
     		response = CallBackUtil.setResponseError(Status.INTERNAL_SERVER_ERROR.getStatusCode(), e.getMessage());
 		}
     	return response;
     }
     
-    private void configurarUsuarioFacebook(Usuario usuario, JSONObject jsonObject) throws JSONException{
-    	usuario.setEmail(jsonObject.getString(PARAM_EMAIL));
+    private Response configurarResponse(Usuario usuario) throws ServiceException{
+    	Token token = tokenGeneratorService.create(usuario);
+    	String retorno = BLANK_RETURN;
+		Response response = null;
+		if (token != null) {
+			Gson gson = new GsonBuilder().setExclusionStrategies(new TokenExclusionStrategy()).create();
+			retorno = gson.toJson(token);
+			response  = CallBackUtil.setResponseOK(retorno, MediaType.APPLICATION_JSON);
+		} else {
+			response = CallBackUtil.setResponseError(Status.INTERNAL_SERVER_ERROR.getStatusCode(), MessageUtil.getMessageFromBundle("exception.token_nao_encontrado"));
+		}
+		return response;
+    }
+    
+    private void configurarUsuario(Usuario usuario, JSONObject jsonObject) throws JSONException{
+    	usuario.setSenha(jsonObject.getString(PARAM_SENHA));
+		usuario.setEmail(jsonObject.getString(PARAM_EMAIL));
+    }
+    
+    private void configurarToken(Token token, Usuario usuario, JSONObject jsonObject) throws JSONException, ServiceException{
+    	token.setUsuario(usuario);
+    	token.setApiKey(jsonObject.getString(PARAM_APIKEY));
     }
 }
