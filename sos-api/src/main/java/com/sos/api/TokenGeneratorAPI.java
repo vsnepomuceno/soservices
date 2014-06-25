@@ -38,6 +38,7 @@ public class TokenGeneratorAPI {
     private final String BLANK_RETURN = "{}";
     private final String PARAM_SENHA = "senha";
     private final String PARAM_EMAIL = "email";
+    private final String PARAM_NOME = "nome";
     private final String PARAM_APIKEY = "apiKey";
    
     @POST
@@ -153,6 +154,12 @@ public class TokenGeneratorAPI {
     private void configurarUsuario(Usuario usuario, JSONObject jsonObject) throws JSONException{
     	usuario.setSenha(jsonObject.getString(PARAM_SENHA));
 		usuario.setEmail(jsonObject.getString(PARAM_EMAIL));
+		
+		try{
+			usuario.setNome(jsonObject.getString(PARAM_NOME));
+		}catch(Exception e){
+			usuario.setNome(null);
+		}
     }
     
     private void configurarToken(Token token, Usuario usuario, JSONObject jsonObject) throws JSONException, ServiceException{
