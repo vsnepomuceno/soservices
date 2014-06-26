@@ -59,6 +59,8 @@ public class PrestadorAPI {
     private final String PARAM_TELEFONE = "telefone";
     private final String PARAM_CIDADE = "cidade";
     private final String PARAM_ESTADO = "estado";
+    private final String PARAM_SENHA_ANTIGA = "senhaAntiga";
+    private final String PARAM_NOVA_SENHA = "novaSenha";
 
     @GET
     @Consumes(MediaType.TEXT_PLAIN)
@@ -219,6 +221,45 @@ public class PrestadorAPI {
 				}
     		}else{
     			response = CallBackUtil.setResponseError(Status.UNAUTHORIZED.getStatusCode(), "Prestador não encontrado.");
+    		}
+    	}catch(ServiceException e){
+    		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
+    	}catch (Exception e) {
+    		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
+    		e.printStackTrace();
+		}
+    	return response;
+    }
+    
+    @PUT
+    @Path("atualizarSenha")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response atualizarSenha(String json, @HeaderParam("token-api") String tokenApi){
+    	Response response = null;
+    	try{
+    		JSONObject jsonObject = new JSONObject(json);
+    		String email = jsonObject.getString(PARAM_EMAIL);
+    		String senhaAntiga = jsonObject.getString(PARAM_SENHA_ANTIGA);
+    		String novaSenha = jsonObject.getString(PARAM_NOVA_SENHA);
+    		
+    		Prestador prestador = prestadorService.findByEmail(email);
+    		if(prestador != null){
+    			
+    			Token token = tokenGeneratorService.findByApiKeyAndUsuarioId(tokenApi, prestador.getId());
+				if(token != null){
+					if (prestador.getSenha().equals(senhaAntiga)) {
+						prestador.setSenha(novaSenha);
+						prestadorService.update(prestador);
+						response = CallBackUtil.setResponseOK("Prestador Editado com Sucesso", MediaType.APPLICATION_JSON);
+					} else {
+						response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), "Senha antiga não confere.");
+					}
+				}else{
+					response = CallBackUtil.setResponseError(Status.UNAUTHORIZED.getStatusCode(), 
+							"Você não tem permissão para editar prestador de serviço.");
+				}
+    		}else{
+    			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), "Prestador não encontrado.");
     		}
     	}catch(ServiceException e){
     		response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
