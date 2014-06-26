@@ -129,6 +129,8 @@ public class TokenGeneratorAPI {
 			Usuario usuarioPesquisado = usuarioSevice.findByEmail(usuario.getEmail());
 			if(usuarioPesquisado == null){
 				usuarioSevice.create(usuario);
+			} else {
+				usuario.setSenha(usuarioPesquisado.getSenha());
 			}
 			response = configurarResponse(usuario);
     	}catch (Exception e) {
