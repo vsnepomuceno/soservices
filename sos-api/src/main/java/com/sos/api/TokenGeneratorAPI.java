@@ -19,8 +19,11 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sos.api.util.CallBackUtil;
 import com.sos.api.util.TokenExclusionStrategy;
+import com.sos.entities.Endereco;
+import com.sos.entities.Prestador;
 import com.sos.entities.Token;
 import com.sos.entities.Usuario;
+import com.sos.service.business.PrestadorService;
 import com.sos.service.business.TokenGeneratorService;
 import com.sos.service.business.UsuarioSevice;
 import com.sos.service.util.MessageUtil;
@@ -34,6 +37,8 @@ public class TokenGeneratorAPI {
     private TokenGeneratorService tokenGeneratorService;
     @Autowired
     private UsuarioSevice usuarioSevice;
+    @Autowired
+    private PrestadorService prestadorSevice;
 
     private final String BLANK_RETURN = "{}";
     private final String PARAM_SENHA = "senha";
@@ -124,11 +129,12 @@ public class TokenGeneratorAPI {
     public Response realizarLoginFacebook(String json){
     	Response response = null;
     	try{
-			Usuario usuario = new Usuario();
+			Prestador usuario = new Prestador();
 			configurarUsuario(usuario, new JSONObject(json));
-			Usuario usuarioPesquisado = usuarioSevice.findByEmail(usuario.getEmail());
+			configurarPrestador(usuario);
+			Prestador usuarioPesquisado = prestadorSevice.findByEmail(usuario.getEmail());
 			if(usuarioPesquisado == null){
-				usuarioSevice.create(usuario);
+				prestadorSevice.create(usuario);
 			} else {
 				usuario.setSenha(usuarioPesquisado.getSenha());
 			}
@@ -139,7 +145,20 @@ public class TokenGeneratorAPI {
     	return response;
     }
     
-    private Response configurarResponse(Usuario usuario) throws ServiceException{
+    private void configurarPrestador(Prestador usuario) {
+    	usuario.setCpf(usuario.getEmail());
+		usuario.setTelefone("00000000");
+		Endereco endereco = new Endereco();		
+		endereco.setLogradouro("default");
+		endereco.setNumero(0);
+		endereco.setComplemento("default");
+		endereco.setCep("default");
+		endereco.setCidade("default");
+		endereco.setEstado("default");
+		usuario.setEndereco(endereco);
+	}
+
+	private Response configurarResponse(Usuario usuario) throws ServiceException{
     	Token token = tokenGeneratorService.create(usuario);
     	String retorno = BLANK_RETURN;
 		Response response = null;
@@ -161,7 +180,7 @@ public class TokenGeneratorAPI {
 			usuario.setNome(jsonObject.getString(PARAM_NOME));
 		}catch(Exception e){
 			usuario.setNome(null);
-		}
+		}		
     }
     
     private void configurarToken(Token token, Usuario usuario, JSONObject jsonObject) throws JSONException, ServiceException{
