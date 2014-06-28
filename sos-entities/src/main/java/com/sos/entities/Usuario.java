@@ -40,7 +40,7 @@ public class Usuario implements Serializable{
 	@OneToMany(mappedBy="usuario", fetch=FetchType.LAZY, orphanRemoval=true)
 	private Set<Token> credenciais;
 
-	@OneToMany(cascade=CascadeType.ALL, mappedBy="usuario", fetch=FetchType.LAZY)
+	@OneToMany(cascade=CascadeType.ALL, mappedBy="usuario")
 	private Set<Avaliacao> avaliacoes;
 	
 	public String getNome() {
