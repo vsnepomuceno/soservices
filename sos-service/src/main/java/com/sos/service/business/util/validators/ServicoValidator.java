@@ -13,7 +13,7 @@ public class ServicoValidator {
 	private static final String SERVICO_TIPO_SERVICO_OBRIGATORIO = "exception.servico_tipo_servico_obrigatorio";
 	private static final String SERVICO_PRESTADOR_OBRIGATORIO = "exception.servico_prestador_obrigatorio";
 	private static final String SERVICO_VALOR_NAO_POSITIVO = "exception.servico_valor_nao_positivo";
-	private static final String SERVICO_TIPO_SERVICO_NAO_VALORADO = "exception.servico_tipo_servico_nao_valorado";
+//	private static final String SERVICO_TIPO_SERVICO_NAO_VALORADO = "exception.servico_tipo_servico_nao_valorado";
 	private static final String SERVICO_TIPO_SERVICO_NAO_VALORADO_OBRIGATORIO = "exception.servico_tipo_servico_nao_valorado_obrigatorio";
 	
 	public static ResultadoValidacao validarCamposServico(Servico servico){

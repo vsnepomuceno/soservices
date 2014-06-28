@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -39,6 +40,9 @@ public class Usuario implements Serializable{
 	@OneToMany(mappedBy="usuario", fetch=FetchType.LAZY, orphanRemoval=true)
 	private Set<Token> credenciais;
 
+	@OneToMany(cascade=CascadeType.ALL, mappedBy="usuario", fetch=FetchType.LAZY)
+	private Set<Avaliacao> avaliacoes;
+	
 	public String getNome() {
 		return nome;
 	}
@@ -72,6 +76,13 @@ public class Usuario implements Serializable{
 			credenciais = new HashSet<Token>();
 		}
 		return credenciais;
+	}
+
+	public Set<Avaliacao> getAvaliacoes() {
+		if(avaliacoes == null){
+			avaliacoes = new HashSet<Avaliacao>();
+		}
+		return avaliacoes;
 	}
 
 	@Override
