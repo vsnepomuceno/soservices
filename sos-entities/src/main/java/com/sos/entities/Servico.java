@@ -119,4 +119,8 @@ public class Servico implements Serializable {
 	public void setPrestador(Prestador prestador) {
 		this.prestador = prestador;
 	}
+
+	public Forum getForum() {
+		return forum;
+	}	
 }

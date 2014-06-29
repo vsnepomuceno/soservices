@@ -11,7 +11,10 @@ import javax.ws.rs.core.Response.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sos.api.util.CallBackUtil;
+import com.sos.entities.Servico;
 import com.sos.service.business.ForumService;
 import com.sos.service.business.PostService;
 import com.sos.service.business.PrestadorService;
@@ -39,18 +42,16 @@ public class ForumAPI {
    
        
     @GET
-    @Path("email")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response pesquisarForumPorPrestador(@QueryParam("email") String email) {
+    public Response pesquisarForumPorServico(@QueryParam("id") Long id) {
     	String retorno = BLANK_RETURN;
     	Response response = null;
 		try {
-			/*Prestador prestador = prestadorService.findByEmail(email);
 			
-			List<Avaliacao> avaliacoes = avaliacaoService.findByUsuarioId(prestador.getId());
+			Servico servico = servicoService.findByCodigo(id);
 			
-			Gson gson = new GsonBuilder().setExclusionStrategies(new AvaliacaoExclusionStrategy()).create();
-    		retorno = gson.toJson(avaliacoes);	*/		
+			Gson gson = new GsonBuilder().create();
+    		retorno = gson.toJson(servico.getForum());			
 			response = CallBackUtil.setResponseOK(retorno, MediaType.APPLICATION_JSON);
 		} catch (Exception e) {
 			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
