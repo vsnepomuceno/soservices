@@ -81,6 +81,7 @@ public class AvaliacaoAPI {
 					Avaliacao avaliacao = avaliacaoService.findByCodigo(id);
 					avaliacao.setReplica(replica);
 					avaliacaoService.update(avaliacao);
+					response = CallBackUtil.setResponseOK("Replica enviada com Sucesso.", MediaType.APPLICATION_JSON);
 				}else{
 					response = CallBackUtil.setResponseError(Status.UNAUTHORIZED.getStatusCode(), 
 							"Você não tem permissão para editar prestador de serviço.");
