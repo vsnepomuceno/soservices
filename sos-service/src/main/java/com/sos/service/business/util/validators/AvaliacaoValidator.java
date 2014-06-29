@@ -36,19 +36,18 @@ public class AvaliacaoValidator{
 	}
 	
 	private static boolean validarCamposTexto(Avaliacao avaliacao, List<String> msgs){
-		boolean valido = false;
+		boolean valido = true;
 		
-		if(avaliacao.getDepoimento() != null && avaliacao.getDepoimento().trim().length() <= 1000){
-			valido = valido && true;
-		}else{
+		if(avaliacao.getDepoimento() == null || avaliacao.getDepoimento().trim().length() > 1000){
+			valido = false;
 			msgs.add(MessageUtil.getMessageFromBundle(AVALIACAO_DEPOIMENTO_LIMITE_CARACTERES));
 		}
 		
-		if(avaliacao.getReplica() != null && avaliacao.getReplica().trim().length() <= 1000){
-			valido = valido && true;
-		}else{
+		if(valido && (avaliacao.getReplica() == null || avaliacao.getReplica().trim().length() > 1000)){
+			valido = false;
 			msgs.add(MessageUtil.getMessageFromBundle(AVALIACAO_REPLICA_LIMITE_CARACTERES));
 		}
+
 		return valido;
 	}
 }
