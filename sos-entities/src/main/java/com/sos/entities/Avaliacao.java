@@ -44,6 +44,10 @@ public class Avaliacao implements Serializable{
     @JoinColumn(name="usuario_id", nullable=false)
 	private Usuario usuario;
 	
+	@ManyToOne
+	@JoinColumn(name="usuario_avaliador_id")
+	private Usuario usuarioAvaliador;
+	
 	public Avaliacao(){
 		
 	}
@@ -146,4 +150,8 @@ public class Avaliacao implements Serializable{
 	public Usuario getUsuario() {
 		return usuario;
 	}
+
+	public Usuario getUsuarioAvaliador() {
+		return usuarioAvaliador;
+	}	
 }
