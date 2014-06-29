@@ -10,6 +10,7 @@ import com.sos.service.util.exception.ServiceException;
 public interface AvaliacaoService{
 	Avaliacao findByCodigo(Long codigo) throws ServiceException;
 	List<Avaliacao> findByTipoAvaliacaoUsuario(TipoAvaliacao tipoAvaliacao, Usuario usuariou);
+	List<Avaliacao> findByUsuarioId(Long codigo) throws ServiceException;
 	
 	void create(Avaliacao avaliacao) throws ServiceException;
 	void update(Avaliacao avaliacao) throws ServiceException;

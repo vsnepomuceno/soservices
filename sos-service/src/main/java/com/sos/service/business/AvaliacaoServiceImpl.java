@@ -29,6 +29,12 @@ public class AvaliacaoServiceImpl implements AvaliacaoService{
 	public List<Avaliacao> findByTipoAvaliacaoUsuario(TipoAvaliacao tipoAvaliacao, Usuario usuariou) {
 		return avaliacaoRepository.findByTipoAvaliacaoUsuario(tipoAvaliacao, usuariou);
 	}
+	
+	@Override
+	@Transactional(readOnly=true)
+	public List<Avaliacao> findByUsuarioId(Long codigo) throws ServiceException {
+		return avaliacaoRepository.findByUsuarioId(codigo);
+	}
 
 	@Override
 	@Transactional

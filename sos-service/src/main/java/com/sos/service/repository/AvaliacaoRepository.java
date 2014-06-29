@@ -10,4 +10,5 @@ import com.sos.entities.Usuario;
 
 public interface AvaliacaoRepository extends JpaRepository<Avaliacao, Long>{
 	List<Avaliacao> findByTipoAvaliacaoUsuario(TipoAvaliacao tipoAvaliacao, Usuario usuariou);
+	List<Avaliacao> findByUsuarioId(Long codigo);
 }
