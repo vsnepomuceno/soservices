@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -35,6 +36,10 @@ public class Servico implements Serializable {
 	
 	@Column(name="descricao", nullable=false, length=500)
 	private String descricao;
+	
+	@OneToOne
+	@JoinColumn(name="forum_id", updatable=false)
+	private Forum forum;
 
 	@Override
 	public int hashCode() {

@@ -9,15 +9,12 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
 @Table(name="avaliacao")
-@Inheritance(strategy=InheritanceType.JOINED) 
 public class Avaliacao implements Serializable{
 
 	private static final long serialVersionUID = -8947438896975933075L;
