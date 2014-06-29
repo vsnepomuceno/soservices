@@ -41,7 +41,7 @@ public class ForumAPI {
     @GET
     @Path("email")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response pesquisarAvaliacoesPorPrestador(@QueryParam("email") String email) {
+    public Response pesquisarForumPorPrestador(@QueryParam("email") String email) {
     	String retorno = BLANK_RETURN;
     	Response response = null;
 		try {
