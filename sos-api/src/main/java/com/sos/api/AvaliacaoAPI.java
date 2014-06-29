@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.sos.api.util.AvaliacaoExclusionStrategy;
 import com.sos.api.util.CallBackUtil;
 import com.sos.entities.Avaliacao;
 import com.sos.entities.Prestador;
@@ -53,7 +54,7 @@ public class AvaliacaoAPI {
 			
 			List<Avaliacao> avaliacoes = avaliacaoService.findByUsuarioId(prestador.getId());
 			
-			Gson gson = new GsonBuilder().create();
+			Gson gson = new GsonBuilder().setExclusionStrategies(new AvaliacaoExclusionStrategy()).create();
     		retorno = gson.toJson(avaliacoes);			
 			response = CallBackUtil.setResponseOK(retorno, MediaType.APPLICATION_JSON);
 		} catch (Exception e) {
