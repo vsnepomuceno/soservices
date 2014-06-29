@@ -12,6 +12,6 @@ public class PrestadorExclusionStrategy implements ExclusionStrategy {
 
 	@Override
 	public boolean shouldSkipField(FieldAttributes f) {
-		return f.getName().equals("servicos") || f.getName().equals("credenciais") || f.getName().equals("senha") || f.getName().equals("usuario");
+		return f.getName().equals("servicos") || f.getName().equals("credenciais") || f.getName().equals("senha");
 	}
 }
