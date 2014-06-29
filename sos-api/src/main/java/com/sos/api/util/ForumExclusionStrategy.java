@@ -3,7 +3,7 @@ package com.sos.api.util;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 
-public class ServicoExclusionStrategy implements ExclusionStrategy {
+public class ForumExclusionStrategy implements ExclusionStrategy {
 	
 	@Override
 	public boolean shouldSkipClass(Class<?> clazz) {
@@ -12,6 +12,6 @@ public class ServicoExclusionStrategy implements ExclusionStrategy {
 
 	@Override
 	public boolean shouldSkipField(FieldAttributes f) {
-		return f.getName().equals("prestador") || f.getName().equals("forum");
+		return f.getName().equals("servicos") || f.getName().equals("credenciais") || f.getName().equals("senha") || f.getName().equals("forum");
 	}
 }

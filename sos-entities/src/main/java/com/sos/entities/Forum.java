@@ -21,7 +21,7 @@ public class Forum {
 	@Column(name="id", updatable=false)
 	private Long id;
 	
-	@OneToMany(mappedBy="forum", fetch=FetchType.LAZY, orphanRemoval=true)
+	@OneToMany(mappedBy="forum", fetch=FetchType.EAGER, orphanRemoval=true)
 	private Set<Post> posts;
 
 	public Long getId() {
