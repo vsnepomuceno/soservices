@@ -27,7 +27,7 @@ public class AvaliacaoServiceImpl implements AvaliacaoService{
 	@Override
 	@Transactional(readOnly=true)
 	public List<Avaliacao> findByTipoAvaliacaoUsuario(TipoAvaliacao tipoAvaliacao, Usuario usuariou) {
-		return avaliacaoRepository.findByTipoAvaliacaoUsuario(tipoAvaliacao, usuariou);
+		return null;//avaliacaoRepository.findByTipoAvaliacaoUsuario(tipoAvaliacao, usuariou);
 	}
 	
 	@Override
