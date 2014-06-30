@@ -2,6 +2,7 @@ package com.sos.entities;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -37,7 +38,7 @@ public class Servico implements Serializable {
 	@Column(name="descricao", nullable=false, length=500)
 	private String descricao;
 	
-	@OneToOne
+	@OneToOne(cascade=CascadeType.PERSIST)
 	@JoinColumn(name="forum_id", updatable=false)
 	private Forum forum;
 
@@ -122,5 +123,9 @@ public class Servico implements Serializable {
 
 	public Forum getForum() {
 		return forum;
+	}
+
+	public void setForum(Forum forum) {
+		this.forum = forum;
 	}	
 }

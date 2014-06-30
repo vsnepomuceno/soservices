@@ -36,6 +36,9 @@ public class Usuario implements Serializable{
 	@Column(name="senha", nullable=true, length=200)
 	private String senha;
 	
+	@Column(name="facebook_id", nullable=true, length=200)
+	private String facebookId;
+	
 	@OneToMany(mappedBy="usuario", fetch=FetchType.LAZY, orphanRemoval=true)
 	private Set<Token> credenciais;
 
@@ -72,6 +75,14 @@ public class Usuario implements Serializable{
 			credenciais = new HashSet<Token>();
 		}
 		return credenciais;
+	}
+
+	public String getFacebookId() {
+		return facebookId;
+	}
+
+	public void setFacebookId(String facebookId) {
+		this.facebookId = facebookId;
 	}
 
 	@Override

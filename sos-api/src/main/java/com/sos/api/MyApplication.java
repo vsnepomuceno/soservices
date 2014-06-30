@@ -17,7 +17,6 @@ public class MyApplication extends ResourceConfig {
         register(ServicoAPI.class);
         register(TipoServicoAPI.class);
         register(TokenGeneratorAPI.class);
-        register(UsuarioAPI.class);
         register(SimpleCORSFilter.class);
         register(AvaliacaoAPI.class);
         register(ForumAPI.class);

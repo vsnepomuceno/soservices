@@ -10,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.sos.entities.Forum;
 import com.sos.entities.Prestador;
 import com.sos.entities.Servico;
 import com.sos.entities.TipoServico;
@@ -120,6 +121,8 @@ public class ServicoServiceImpl implements ServicoService {
 		ResultadoValidacao resultadoValidacao = ServicoValidator.validarCamposServico(servico);
 		
 		if(resultadoValidacao.isValido()){
+			Forum forum = new Forum();
+			servico.setForum(forum);
 			servicoRepository.save(servico);
 		}else{
 			throw new ServiceException(resultadoValidacao.getMsgs());
