@@ -15,6 +15,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "prestador")
@@ -36,6 +37,9 @@ public class Prestador extends Usuario implements Serializable{
 
 	@OneToMany(mappedBy="prestador", fetch=FetchType.EAGER, orphanRemoval=true)
 	private Set<Servico> servicos;
+	
+	@Transient
+	private Double nota;
 	
 	public Prestador(){
 		
@@ -65,9 +69,12 @@ public class Prestador extends Usuario implements Serializable{
 		this.telefone = telefone;
 	}
 
-	@Override
-	public String toString() {
-		return "Prestador [cpf=" + cpf + ", telefone=" + telefone + "]";
+	public Double getNota() {
+		return nota;
+	}
+
+	public void setNota(Double nota) {
+		this.nota = nota;
 	}
 
 	public Set<Servico> getServicos() {
@@ -75,6 +82,11 @@ public class Prestador extends Usuario implements Serializable{
 			servicos = new HashSet<Servico>();
 		}
 		return servicos;
+	}
+	
+	@Override
+	public String toString() {
+		return "Prestador [cpf=" + cpf + ", telefone=" + telefone + "]";
 	}
 
 	@Override

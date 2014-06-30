@@ -43,7 +43,7 @@ public class AvaliacaoValidator{
 			msgs.add(MessageUtil.getMessageFromBundle(AVALIACAO_DEPOIMENTO_LIMITE_CARACTERES));
 		}
 		
-		if(valido && (avaliacao.getReplica() == null || avaliacao.getReplica().trim().length() > 1000)){
+		if(valido && (avaliacao.getReplica() != null || avaliacao.getReplica().trim().length() > 1000)){
 			valido = false;
 			msgs.add(MessageUtil.getMessageFromBundle(AVALIACAO_REPLICA_LIMITE_CARACTERES));
 		}

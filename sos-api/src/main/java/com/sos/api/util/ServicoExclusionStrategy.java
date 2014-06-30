@@ -12,6 +12,8 @@ public class ServicoExclusionStrategy implements ExclusionStrategy {
 
 	@Override
 	public boolean shouldSkipField(FieldAttributes f) {
-		return f.getName().equals("prestador") || f.getName().equals("forum");
+		return f.getName().equals("servicos") || f.getName().equals("forum")
+				|| f.getName().equals("cpf") || f.getName().equals("credenciais") 
+				|| f.getName().equals("senha");
 	}
 }

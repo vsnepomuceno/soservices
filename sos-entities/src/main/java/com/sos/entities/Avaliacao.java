@@ -150,5 +150,13 @@ public class Avaliacao implements Serializable{
 
 	public Usuario getUsuarioAvaliador() {
 		return usuarioAvaliador;
+	}
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
+	}
+
+	public void setUsuarioAvaliador(Usuario usuarioAvaliador) {
+		this.usuarioAvaliador = usuarioAvaliador;
 	}	
 }

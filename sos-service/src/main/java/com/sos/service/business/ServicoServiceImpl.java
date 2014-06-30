@@ -1,5 +1,6 @@
 package com.sos.service.business;
 
+import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -89,6 +90,8 @@ public class ServicoServiceImpl implements ServicoService {
 			for (Prestador prestador : prestadoresFiltrados) {
 				for (Servico servico : prestador.getServicos()) {
 					if(servico.getTipoServico().equals(filtro.getTIpoServico())){
+						BigDecimal nota = prestadorRepository.findNotaPrestadorById(prestador.getId());
+						servico.getPrestador().setNota(nota.doubleValue());
 						servicos.add(servico);
 					}
 				}
