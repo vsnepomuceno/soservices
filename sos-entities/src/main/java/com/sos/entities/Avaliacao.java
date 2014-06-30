@@ -27,7 +27,7 @@ public class Avaliacao implements Serializable{
 	@Column(name="depoimento", nullable=true, length=1000)
 	private String depoimento;
 	
-	@Column(name="replica", nullable=true, length=1000)
+	@Column(name="replica", nullable=false, length=1000)
 	private String replica;
 	
 	@Column(name="nota", nullable=true)

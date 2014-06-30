@@ -118,6 +118,7 @@ public class AvaliacaoAPI {
     	try{
     		JSONObject jsonObject = new JSONObject(json);
     		Avaliacao avaliacao = new Avaliacao();
+    		avaliacao.setReplica("");
     		configurarAvaliacao(avaliacao, jsonObject);
     		
     		Token token = tokenGeneratorService.findByApiKeyAndUsuarioId(tokenApi, avaliacao.getUsuario().getId());
