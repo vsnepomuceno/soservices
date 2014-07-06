@@ -15,7 +15,7 @@
 	<bean class="com.sos.api.TipoServicoAPI" scope="request" />
 	<bean class="com.sos.api.ServicoAPI" scope="request" />
 	<bean class="com.sos.api.CustomExceptionMapper" />
-	<bean class="com.sos.api.UsuarioAPI" scope="request" />
+	<!-- <bean class="com.sos.api.UsuarioAPI" scope="request" /> -->
 	<bean class="com.sos.api.PrestadorAPI" scope="request" />
 	<bean class="com.sos.api.AvaliacaoAPI" scope="request" />
 	<bean class="com.sos.api.ForumAPI" scope="request" />

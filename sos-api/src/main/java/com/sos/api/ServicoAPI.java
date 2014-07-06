@@ -72,6 +72,27 @@ public class ServicoAPI {
 		}
 		return response;
     }
+
+    @GET
+    @Path("{servico}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response pesquisarServicos(@PathParam("servico") Long codigo) {
+    	String retorno = BLANK_RETURN;
+    	Response response = null;
+		try {
+			Servico servico = servicoService.findByCodigo(codigo);
+			
+			Gson gson = new GsonBuilder().setExclusionStrategies(new ServicoExclusionStrategy()).create();
+    		retorno = gson.toJson(servico);		
+			response = CallBackUtil.setResponseOK(retorno, MediaType.APPLICATION_JSON);
+		} catch (ServiceException e) {
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
+		} catch (Exception e) {
+			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
+			e.printStackTrace();
+		}
+		return response;
+    }
     
     @GET
     @Path("email")

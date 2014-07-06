@@ -70,7 +70,7 @@ public class PrestadorValidator extends UsuarioValidator{
 	
 	private static boolean validarTipoServico(FiltroServicos filtro, List<String> msgs){
 		boolean valido = true;
-		if(filtro.getTIpoServico() == null){
+		if(filtro.getTipoServico() == null){
 			valido = false;
 			msgs.add(MessageUtil.getMessageFromBundle(FILTRO_PRESTADOR_TIPO_SERVICO_OBRIGATORIO));
 		}

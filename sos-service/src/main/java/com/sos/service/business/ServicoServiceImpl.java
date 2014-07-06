@@ -42,6 +42,13 @@ public class ServicoServiceImpl implements ServicoService {
 		if(servico == null){
 			String mensagem = MessageUtil.getMessageFromBundle(SERVICO_NAO_ENCONTRADO);
 			throw new ServiceException(MessageFormat.format(mensagem, codigo));
+		}else{
+			BigDecimal nota = prestadorRepository.findNotaPrestadorById(servico.getPrestador().getId());
+			if(nota != null){
+				servico.getPrestador().setNota(nota.doubleValue());
+			} else{
+				servico.getPrestador().setNota(null);
+			}
 		}
 		return servico;
 	}
@@ -80,7 +87,7 @@ public class ServicoServiceImpl implements ServicoService {
 		List<Servico> servicos = new ArrayList<Servico>();
 		ResultadoValidacao resultadoValidacao = PrestadorValidator.validarFiltroPrestador(filtro);
 		if(resultadoValidacao.isValido()){
-			prestadores = prestadorRepository.findByServicosTipoServico(filtro.getTIpoServico());
+			prestadores = prestadorRepository.findByServicosTipoServico(filtro.getTipoServico());
 			prestadoresFiltrados = new ArrayList<Prestador>();
 			for (Prestador prestador : prestadores) {
 				if(DistanciaUtil.verificarPertenceRaioDistancia(prestador, filtro.getDistancia(), filtro.getLatitude(), filtro.getLongitude())){
@@ -90,9 +97,13 @@ public class ServicoServiceImpl implements ServicoService {
 			
 			for (Prestador prestador : prestadoresFiltrados) {
 				for (Servico servico : prestador.getServicos()) {
-					if(servico.getTipoServico().equals(filtro.getTIpoServico())){
+					if(servico.getTipoServico().equals(filtro.getTipoServico())){
 						BigDecimal nota = prestadorRepository.findNotaPrestadorById(prestador.getId());
-						servico.getPrestador().setNota(nota.doubleValue());
+						if(nota != null){
+							servico.getPrestador().setNota(nota.doubleValue());
+						} else{
+							servico.getPrestador().setNota(null);
+						}
 						servicos.add(servico);
 					}
 				}

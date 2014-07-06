@@ -23,7 +23,7 @@ public class FiltroServicos {
 				+ ", distancia=" + distancia + "]";
 	}
 
-	public TipoServico getTIpoServico() {
+	public TipoServico getTipoServico() {
 		return tipoServico;
 	}
 

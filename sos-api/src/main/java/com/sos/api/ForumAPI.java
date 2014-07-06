@@ -5,6 +5,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -50,9 +51,9 @@ public class ForumAPI {
    
        
     @GET
-    @Path("servico")
+    @Path("servico/{idServico}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response pesquisarForumPorServico(@QueryParam("id") Long id) {
+    public Response pesquisarForumPorServico(@PathParam("idServico") Long id) {
     	String retorno = BLANK_RETURN;
     	Response response = null;
 		try {
