@@ -55,7 +55,7 @@ public class ForumAPI {
     private final String PARAM_EMAIL = "email";
     private final String PARAM_RESPOSTA = "resposta";    
     private final String PARAM_PERGUNTA = "pergunta";    
-    private final String PARAM_ID_USUARIO = "id_usuario";    
+    private final String PARAM_EMAIL_USUARIO = "email_usuario";    
    
     @POST
     @Path("servico/{idServico}")
@@ -65,12 +65,13 @@ public class ForumAPI {
 		try {
 			Servico servico = servicoService.findByCodigo(id);
 			if(servico != null){
-				Token token = tokenGeneratorService.findByApiKeyAndUsuarioId(tokenApi, servico.getPrestador().getId());
+				Post post = new Post();				
+				JSONObject jsonObject = new JSONObject(json);
+				configurarPost(post, servico, jsonObject);
+				post.setResposta("");
+				
+				Token token = tokenGeneratorService.findByApiKeyAndUsuarioId(tokenApi, post.getUsuario().getId());
 				if(token != null){
-					Post post = new Post();
-					
-					JSONObject jsonObject = new JSONObject(json);
-					configurarPost(post, servico, jsonObject);
 					
 					postService.create(post);
 					response = CallBackUtil.setResponseOK("Post criado com Sucesso", MediaType.APPLICATION_JSON);
@@ -149,8 +150,8 @@ public class ForumAPI {
 			post.setMensagem(jsonObject.getString(PARAM_PERGUNTA));
 			post.setForum(servico.getForum());
 			
-			Long idUsuario = jsonObject.getLong(PARAM_ID_USUARIO);
-			Usuario usuario = usuarioSevice.findByCodigo(idUsuario);
+			String emailUsuario = jsonObject.getString(PARAM_EMAIL_USUARIO);
+			Usuario usuario = usuarioSevice.findByEmail(emailUsuario);
 			post.setUsuario(usuario);
 		}catch(JSONException | ServiceException e){
 			if(e instanceof ServiceException){
