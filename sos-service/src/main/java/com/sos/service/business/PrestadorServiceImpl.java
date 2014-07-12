@@ -1,5 +1,6 @@
 package com.sos.service.business;
 
+import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -35,6 +36,14 @@ public class PrestadorServiceImpl implements PrestadorService {
 		Prestador prestador = prestadorRepository.findOne(codigo);
 		if (prestador == null) {
 			throw new ServiceException(MessageUtil.getMessageFromBundle(PRESTADOR_NAO_ENCONTRADO));
+		}else{
+
+			BigDecimal nota = prestadorRepository.findNotaPrestadorById(prestador.getId());
+			if(nota != null){
+				prestador.setNota(nota.doubleValue());
+			} else{
+				prestador.setNota(null);
+			}
 		}
 		return prestador;
 	}
@@ -111,7 +120,19 @@ public class PrestadorServiceImpl implements PrestadorService {
 	@Override
 	@Transactional(readOnly=true)
 	public Prestador findByCPF(String cpf) throws ServiceException {
-		return prestadorRepository.findByCpf(cpf);
+		Prestador prestador = prestadorRepository.findByCpf(cpf);
+		if (prestador == null) {
+			throw new ServiceException(MessageUtil.getMessageFromBundle(PRESTADOR_NAO_ENCONTRADO));
+		}else{
+
+			BigDecimal nota = prestadorRepository.findNotaPrestadorById(prestador.getId());
+			if(nota != null){
+				prestador.setNota(nota.doubleValue());
+			} else{
+				prestador.setNota(null);
+			}
+		}
+		return prestador;
 	}
 	
 	private void salvarPrestador(Prestador prestador){
@@ -121,6 +142,18 @@ public class PrestadorServiceImpl implements PrestadorService {
 
 	@Override
 	public Prestador findByEmail(String email) throws ServiceException {
-		return prestadorRepository.findByEmail(email);
+		Prestador prestador = prestadorRepository.findByEmail(email);
+		if (prestador == null) {
+			throw new ServiceException(MessageUtil.getMessageFromBundle(PRESTADOR_NAO_ENCONTRADO));
+		}else{
+
+			BigDecimal nota = prestadorRepository.findNotaPrestadorById(prestador.getId());
+			if(nota != null){
+				prestador.setNota(nota.doubleValue());
+			} else{
+				prestador.setNota(null);
+			}
+		}
+		return prestador;
 	}
 }

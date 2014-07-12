@@ -53,7 +53,7 @@ public class AvaliacaoAPI {
     private final String PARAM_NOTA = "nota";    
     private final String PARAM_DEPOIMENTO = "depoimento";    
     private final String PARAM_USUARIO_ID = "usuario_id";    
-    private final String PARAM_USUARIO_AVALIADOR_ID = "usuario_avaliador_id";    
+    private final String PARAM_USUARIO_AVALIADOR_EMAIL = "usuario_avaliador_email";    
        
     @GET
     @Path("email")
@@ -121,7 +121,7 @@ public class AvaliacaoAPI {
     		avaliacao.setReplica("");
     		configurarAvaliacao(avaliacao, jsonObject);
     		
-    		Token token = tokenGeneratorService.findByApiKeyAndUsuarioId(tokenApi, avaliacao.getUsuario().getId());
+    		Token token = tokenGeneratorService.findByApiKeyAndUsuarioId(tokenApi, avaliacao.getUsuarioAvaliador().getId());
 			if(token != null){
 				avaliacaoService.create(avaliacao);
 				response = CallBackUtil.setResponseOK("Avaliação realizada com sucesso.", MediaType.APPLICATION_JSON);
@@ -159,11 +159,11 @@ public class AvaliacaoAPI {
     	} catch (JSONException | ServiceException e) {
 		}
     	
-    	Long usuarioAvaliadorId = null;
+    	String usuarioAvaliadorEmail = null;
     	Usuario usuarioAvaliador = null;
     	try {
-    		usuarioAvaliadorId = jsonObject.getLong(PARAM_USUARIO_AVALIADOR_ID);
-    		usuarioAvaliador = usuarioService.findByCodigo(usuarioAvaliadorId);
+    		usuarioAvaliadorEmail = jsonObject.getString(PARAM_USUARIO_AVALIADOR_EMAIL);
+    		usuarioAvaliador = usuarioService.findByEmail(usuarioAvaliadorEmail);
     	} catch (JSONException | ServiceException e) {
 		}
     	
