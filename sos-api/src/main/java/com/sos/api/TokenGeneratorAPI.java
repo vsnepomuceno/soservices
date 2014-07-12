@@ -45,6 +45,7 @@ public class TokenGeneratorAPI {
     private final String PARAM_EMAIL = "email";
     private final String PARAM_NOME = "nome";
     private final String PARAM_APIKEY = "apiKey";
+    private final String PARAM_FACEBOOK_ID = "facebookId";
    
     @POST
     @Path("{token}")
@@ -185,6 +186,12 @@ public class TokenGeneratorAPI {
 			usuario.setNome(jsonObject.getString(PARAM_NOME));
 		}catch(Exception e){
 			usuario.setNome(null);
+		}		
+		
+		try{
+			usuario.setFacebookId(jsonObject.getString(PARAM_FACEBOOK_ID));
+		}catch(Exception e){
+			usuario.setFacebookId(null);
 		}		
     }
     
