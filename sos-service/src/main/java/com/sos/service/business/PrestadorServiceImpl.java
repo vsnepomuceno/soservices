@@ -143,10 +143,7 @@ public class PrestadorServiceImpl implements PrestadorService {
 	@Override
 	public Prestador findByEmail(String email) throws ServiceException {
 		Prestador prestador = prestadorRepository.findByEmail(email);
-		if (prestador == null) {
-			throw new ServiceException(MessageUtil.getMessageFromBundle(PRESTADOR_NAO_ENCONTRADO));
-		}else{
-
+		if (prestador != null) {
 			BigDecimal nota = prestadorRepository.findNotaPrestadorById(prestador.getId());
 			if(nota != null){
 				prestador.setNota(nota.doubleValue());

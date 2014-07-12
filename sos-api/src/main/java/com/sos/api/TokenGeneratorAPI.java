@@ -135,16 +135,19 @@ public class TokenGeneratorAPI {
     public Response realizarLoginFacebook(String json){
     	Response response = null;
     	try{
-			Prestador usuario = new Prestador();
-			configurarUsuario(usuario, new JSONObject(json));
-			configurarPrestador(usuario);
-			Prestador usuarioPesquisado = prestadorSevice.findByEmail(usuario.getEmail());
+			Prestador prestador = new Prestador();
+			configurarUsuario(prestador, new JSONObject(json));
+			configurarPrestador(prestador);
+			Prestador usuarioPesquisado = prestadorSevice.findByEmail(prestador.getEmail());
 			if(usuarioPesquisado == null){
-				prestadorSevice.create(usuario);
+				prestadorSevice.create(prestador);
 			} else {
-				usuario.setSenha(usuarioPesquisado.getSenha());
+				if(!usuarioPesquisado.getFacebookId().equals(prestador.getFacebookId())){
+					prestadorSevice.update(prestador);;
+				}
+				prestador.setSenha(usuarioPesquisado.getSenha());
 			}
-			response = configurarResponse(usuario);
+			response = configurarResponse(prestador);
     	}catch (Exception e) {
     		response = CallBackUtil.setResponseError(Status.INTERNAL_SERVER_ERROR.getStatusCode(), e.getMessage());
 		}
