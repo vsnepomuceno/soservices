@@ -141,7 +141,7 @@ public class PrestadorServiceImpl implements PrestadorService {
 	}
 
 	@Override
-	public Prestador findByEmail(String email) throws ServiceException {
+	public Prestador findByEmail(String email) {
 		Prestador prestador = prestadorRepository.findByEmail(email);
 		if (prestador != null) {
 			BigDecimal nota = prestadorRepository.findNotaPrestadorById(prestador.getId());

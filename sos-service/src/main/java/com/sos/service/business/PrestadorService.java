@@ -14,5 +14,5 @@ public interface PrestadorService {
 	void delete(final Prestador prestador) throws ServiceException;
 	Prestador findByCPF(final String cpf) throws ServiceException;
 	List<Prestador> findByServicosTipoServico(final TipoServico tipoServico) throws ServiceException;
-	Prestador findByEmail(final String email) throws ServiceException;
+	Prestador findByEmail(final String email);
 }

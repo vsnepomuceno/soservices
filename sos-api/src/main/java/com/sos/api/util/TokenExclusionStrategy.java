@@ -12,6 +12,8 @@ public class TokenExclusionStrategy implements ExclusionStrategy {
 
 	@Override
 	public boolean shouldSkipField(FieldAttributes f) {
-		return f.getName().equals("usuario") || f.getName().equals("id");
+		return f.getName().equals("cpf") || f.getName().equals("id") || f.getName().equals("credenciais")
+				|| f.getName().equals("endereco") || f.getName().equals("nota") || f.getName().equals("senha")
+				|| f.getName().equals("servicos") || f.getName().equals("telefone");
 	}
 }

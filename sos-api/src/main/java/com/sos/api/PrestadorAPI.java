@@ -92,8 +92,6 @@ public class PrestadorAPI {
 			Gson gson = new GsonBuilder().setExclusionStrategies(new PrestadorExclusionStrategy()).create();
     		retorno = gson.toJson(prestador);			
     		response = CallBackUtil.setResponseOK(retorno, MediaType.APPLICATION_JSON);
-		} catch (ServiceException e) {
-			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
 		} catch (Exception e) {
 			response = CallBackUtil.setResponseError(Status.BAD_REQUEST.getStatusCode(), e.getMessage());
 			e.printStackTrace();
