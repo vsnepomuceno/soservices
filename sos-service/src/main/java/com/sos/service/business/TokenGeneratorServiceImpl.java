@@ -1,7 +1,6 @@
 package com.sos.service.business;
 
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.codec.binary.Base64;
@@ -34,6 +33,23 @@ public class TokenGeneratorServiceImpl implements TokenGeneratorService {
 		}
 		return token;
 	}
+	
+	@Override
+	@Transactional(readOnly=true)
+	public Token findByUsuarioId(Long id) throws ServiceException {
+		Usuario usuario = usuarioRepository.findOne(id);
+		Token token;
+		
+		if(usuario != null){
+			token = tokenGeneratorRepository.findByUsuario(usuario);
+			if(token == null){
+				throw new ServiceException(MessageUtil.getMessageFromBundle(TOKEN_NAO_ECONTRADO));
+			}
+		}else{
+			throw new ServiceException(MessageUtil.getMessageFromBundle(TOKEN_NAO_ECONTRADO));
+		}
+		return token;
+	}
 
 	@Override
 	@Transactional
@@ -59,8 +75,8 @@ public class TokenGeneratorServiceImpl implements TokenGeneratorService {
 	public void deleteAllByUsuario(Usuario usuario) throws ServiceException {
 		usuario = usuarioRepository.findByEmailAndSenha(usuario.getEmail(), usuario.getSenha());
 		if(usuario != null){
-			List<Token> tokens = tokenGeneratorRepository.findByUsuario(usuario);
-			tokenGeneratorRepository.deleteInBatch(tokens);
+			Token tokens = tokenGeneratorRepository.findByUsuario(usuario);
+			tokenGeneratorRepository.delete(tokens);
 		}
 	}
 	

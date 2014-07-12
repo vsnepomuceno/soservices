@@ -8,5 +8,6 @@ public interface TokenGeneratorService {
 	Token create(Usuario usuario) throws ServiceException;
 	void delete(final Token token) throws ServiceException;
 	void deleteAllByUsuario(Usuario usuario) throws ServiceException;
+	Token findByUsuarioId(Long id) throws ServiceException;
 	Token findByApiKeyAndUsuarioId(String apiKey, Long id) throws ServiceException;
 }

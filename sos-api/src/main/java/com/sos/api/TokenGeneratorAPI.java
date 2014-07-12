@@ -52,17 +52,22 @@ public class TokenGeneratorAPI {
     @Consumes(MediaType.APPLICATION_JSON)
     public String gerarToken(@PathParam("token") Long id, String json){
     	String retorno = BLANK_RETURN;
+    	Token token = null;
     	try{
     		Usuario usuario = usuarioSevice.findByCodigo(id);
     		if(usuario != null){
-    			JSONObject jsonObject = new JSONObject(json);
-    			configurarUsuario(usuario, jsonObject);
-    			Token token = tokenGeneratorService.create(usuario);
+    			token = tokenGeneratorService.findByUsuarioId(id);
+    			
+    			Gson gson = new GsonBuilder().setExclusionStrategies(new TokenExclusionStrategy()).create();
+
     			if(token != null){
-    				Gson gson = new GsonBuilder().setExclusionStrategies(new TokenExclusionStrategy()).create();
     	    		retorno = gson.toJson(token);
     			}else{
-    				//TODO Saber qual mensagem passar para o usuário
+    				JSONObject jsonObject = new JSONObject(json);
+    				configurarUsuario(usuario, jsonObject);
+
+    				token = tokenGeneratorService.create(usuario);
+    				retorno = gson.toJson(token);
     			}
     		}else{
     			//TODO Saber qual a mensagem enviar para o cliente
