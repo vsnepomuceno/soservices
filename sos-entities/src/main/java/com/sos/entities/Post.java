@@ -64,6 +64,14 @@ public class Post {
 		return forum;
 	}
 
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
+	}
+
+	public void setForum(Forum forum) {
+		this.forum = forum;
+	}
+
 	@Override
 	public String toString() {
 		return "Avaliacao [id=" + id + ", mensagem=" + mensagem
