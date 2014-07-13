@@ -122,7 +122,7 @@ public class ServicoAPI {
     	Response response = null;
     	try {
     		List<Servico> servicos = 
-    				servicoService.findByFiltroServico(configurarFiltroServicos(tipoServicoId, longitude, latitude, distancia));
+    				servicoService.findByFiltroServico(configurarFiltroServicos(tipoServicoId, longitude, latitude, distancia)); 
     		
     		Gson gson = new GsonBuilder().setExclusionStrategies(new ServicoExclusionStrategy()).create();
     		retorno = gson.toJson(servicos);
