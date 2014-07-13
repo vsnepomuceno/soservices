@@ -3,6 +3,7 @@ package com.sos.service.business;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +15,8 @@ import com.sos.entities.Forum;
 import com.sos.entities.Prestador;
 import com.sos.entities.Servico;
 import com.sos.entities.TipoServico;
-import com.sos.service.business.util.DistanciaUtil;
 import com.sos.service.business.util.FiltroServicos;
+import com.sos.service.business.util.ServicosComparator;
 import com.sos.service.business.util.validators.PrestadorValidator;
 import com.sos.service.business.util.validators.ResultadoValidacao;
 import com.sos.service.business.util.validators.ServicoValidator;
@@ -32,6 +33,9 @@ public class ServicoServiceImpl implements ServicoService {
 
 	@Autowired
 	PrestadorRepository prestadorRepository;
+	
+	@Autowired
+	GoogleMapsService googleMapsService;
 
 	private static final String SERVICO_NAO_ENCONTRADO = "exception.servico_id_nao_encontrado";
 	
@@ -90,7 +94,9 @@ public class ServicoServiceImpl implements ServicoService {
 			prestadores = prestadorRepository.findByServicosTipoServico(filtro.getTipoServico());
 			prestadoresFiltrados = new ArrayList<Prestador>();
 			for (Prestador prestador : prestadores) {
-				if(DistanciaUtil.verificarPertenceRaioDistancia(prestador, filtro.getDistancia(), filtro.getLatitude(), filtro.getLongitude())){
+				Long distancia = googleMapsService.calcularDistancia(prestador.getEndereco(), filtro.getLatitude(), filtro.getLongitude());
+				if(distancia <= filtro.getDistancia()){
+					prestador.setDistancia(distancia);
 					prestadoresFiltrados.add(prestador);
 				}
 			}
@@ -108,6 +114,7 @@ public class ServicoServiceImpl implements ServicoService {
 					}
 				}
 			}
+			Collections.sort(servicos, new ServicosComparator());
 		}else{
 			throw new ServiceException(resultadoValidacao.getMsgs());
 		}

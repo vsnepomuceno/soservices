@@ -3,5 +3,6 @@ package com.sos.service.business;
 import com.sos.entities.Endereco;
 
 public interface GoogleMapsService {
-	public void configurarLatLongEndereco(Endereco endereco);
+	void configurarLatLongEndereco(Endereco endereco);
+	Long calcularDistancia(Endereco enderecoOrigem, double latitudeDestino, double longitudeDestino);
 }

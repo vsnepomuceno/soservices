@@ -122,9 +122,13 @@ public class AvaliacaoAPI {
     		configurarAvaliacao(avaliacao, jsonObject);
     		
     		Token token = tokenGeneratorService.findByApiKeyAndUsuarioId(tokenApi, avaliacao.getUsuarioAvaliador().getId());
+    		boolean autoAvaliacao = avaliacao.getUsuarioAvaliador().equals(avaliacao.getUsuario());
 			if(token != null){
 				avaliacaoService.create(avaliacao);
 				response = CallBackUtil.setResponseOK("Avaliação realizada com sucesso.", MediaType.APPLICATION_JSON);
+			}else if(autoAvaliacao){
+				response = CallBackUtil.setResponseError(Status.UNAUTHORIZED.getStatusCode(), 
+						"Você não tem permissão para fazer uma auto avaliação.");
 			}else{
 				response = CallBackUtil.setResponseError(Status.UNAUTHORIZED.getStatusCode(), 
 						"Você não tem permissão para avaliar o serviço do prestador.");

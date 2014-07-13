@@ -41,6 +41,9 @@ public class Prestador extends Usuario implements Serializable{
 	@Transient
 	private Double nota;
 	
+	@Transient
+	private Long distancia;
+	
 	public Prestador(){
 		
 	}
@@ -84,6 +87,14 @@ public class Prestador extends Usuario implements Serializable{
 		return servicos;
 	}
 	
+	public Long getDistancia() {
+		return distancia;
+	}
+
+	public void setDistancia(Long distancia) {
+		this.distancia = distancia;
+	}
+
 	@Override
 	public String toString() {
 		return "Prestador [cpf=" + cpf + ", telefone=" + telefone + "]";
